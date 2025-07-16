@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Finanzas Personales</title>
+    <link rel="stylesheet" href="./assets/styles/main.css">
+    <style>
+        body {
+            background: #181a1b;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            color: #e1e4e8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #22272e;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(20, 23, 28, 0.25);
+            padding: 36px 32px;
+        }
+        header h1 {
+            font-size: 2.3rem;
+            color: #58a6ff;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        header p {
+            color: #8b949e;
+            font-size: 1.1rem;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            margin-bottom: 36px;
+        }
+        nav a {
+            color: #e1e4e8;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            background: #22272e;
+            border: 1px solid transparent;
+            transition: background 0.2s, border 0.2s, color 0.2s;
+        }
+        nav a.active, nav a:hover {
+            background: #21262d;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+        }
+        h2 {
+            color: #58a6ff;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        section {
+            margin-bottom: 32px;
+        }
+        .form-demo {
+            background: #21262d;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 18px;
+            border: 1px solid #30363d;
+        }
+        .form-demo label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #e1e4e8;
+        }
+        .form-demo input, .form-demo select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 14px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background: #161b22;
+            color: #e1e4e8;
+            font-size: 1rem;
+        }
+        .form-demo button {
+            background: #238636;
+            color: #fff;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(20,23,28,0.08);
+            transition: background 0.2s;
+        }
+        .form-demo button:hover {
+            background: #2ea043;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            background: #21262d;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #30363d;
+            text-align: left;
+        }
+        th {
+            background: #161b22;
+            color: #58a6ff;
+            font-weight: 600;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        ul {
+            padding-left: 18px;
+        }
+        li {
+            margin-bottom: 8px;
+            color: #e1e4e8;
+        }
+        li button {
+            background: #21262d;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 4px 14px;
+            margin-left: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        li button:hover {
+            background: #30363d;
+            color: #fff;
+        }
+        .summary-box {
+            background: #21262d;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 40px;
+            justify-content: space-around;
+            border: 1px solid #30363d;
+        }
+        .summary-item {
+            text-align: center;
+        }
+        .summary-item span {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #58a6ff;
+        }
+        /* img removed */
+        footer {
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.95rem;
+            margin-top: 32px;
+        }
+        @media (max-width: 900px) {
+            .container {
+                margin: 16px;
+                padding: 18px 8px;
+            }
+            nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .summary-box {
+                flex-direction: column;
+                gap: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+    <h1 style="display: flex; align-items: center; gap: 12px;">
+        PocketPiggy
+    </h1>
+    <p>Controla tus ingresos, gastos y presupuestos de manera sencilla.</p>
+</header>
+        <nav>
+            <a href="#" class="active">Dashboard</a>
+            <a href="#">Transacciones</a>
+            <a href="#">Categorías</a>
+            <a href="#">Presupuestos</a>
+        </nav>
+        <main>
+            <!-- Dashboard -->
+            <section id="dashboard">
+                <h2>Resumen Mensual</h2>
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <span>$2,500</span>
+                        Ingresos
+                    </div>
+                    <div class="summary-item">
+                        <span>$1,200</span>
+                        Gastos
+                    </div>
+                    <div class="summary-item">
+                        <span>$1,300</span>
+                        Balance
+                    </div>
+                </div>
+                <div>
+                    <h2>Comparativa gastos estimados vs reales</h2>
+                    <!-- Imagen de gráfico eliminada -->
+                </div>
+            </section>
+            <!-- Transacciones -->
+            <section id="transactions">
+                <h2>Lista de Transacciones</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Categoría</th>
+                            <th>Monto</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-07-01</td>
+                            <td>Ingreso</td>
+                            <td>Salario</td>
+                            <td>$2,000</td>
+                            <td>Pago mensual</td>
+                        </tr>
+                        <tr>
+                            <td>2025-07-03</td>
+                            <td>Egreso</td>
+                            <td>Alimentación</td>
+                            <td>$150</td>
+                            <td>Supermercado</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-demo">
+                    <h2>Registrar/Editar Transacción</h2>
+                    <form>
+                        <label>Tipo</label>
+                        <select>
+                            <option>Ingreso</option>
+                            <option>Egreso</option>
+                        </select>
+                        <label>Monto</label>
+                        <input type="number" placeholder="Monto" />
+                        <label>Fecha</label>
+                        <input type="date" />
+                        <label>Categoría</label>
+                        <input type="text" placeholder="Categoría" />
+                        <label>Descripción</label>
+                        <input type="text" placeholder="Descripción" />
+                        <button type="submit">Guardar</button>
+                    </form>
+                </div>
+            </section>
+            <!-- Categorías -->
+            <section id="categories">
+                <h2>Gestión de Categorías</h2>
+                <ul>
+                    <li>Alimentación <button>Editar</button> <button>Eliminar</button></li>
+                    <li>Transporte <button>Editar</button> <button>Eliminar</button></li>
+                    <li>Ocio <button>Editar</button> <button>Eliminar</button></li>
+                    <li>Servicios <button>Editar</button> <button>Eliminar</button></li>
+                    <li>Salud <button>Editar</button> <button>Eliminar</button></li>
+                    <li>Educación <button>Editar</button> <button>Eliminar</button></li>
+                    <li>Otros <button>Editar</button> <button>Eliminar</button></li>
+                </ul>
+                <div class="form-demo">
+                    <h2>Crear/Editar Categoría</h2>
+                    <form>
+                        <label>Nombre de la categoría</label>
+                        <input type="text" placeholder="Ej: Mascotas" />
+                        <button type="submit">Guardar</button>
+                    </form>
+                </div>
+            </section>
+            <!-- Presupuestos -->
+            <section id="budgets">
+                <h2>Configuración de Presupuestos</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mes</th>
+                            <th>Categoría</th>
+                            <th>Presupuesto Estimado</th>
+                            <th>Gasto Real</th>
+                            <th>Desviación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Julio 2025</td>
+                            <td>Alimentación</td>
+                            <td>$300</td>
+                            <td>$250</td>
+                            <td>+50</td>
+                        </tr>
+                        <tr>
+                            <td>Julio 2025</td>
+                            <td>Transporte</td>
+                            <td>$100</td>
+                            <td>$120</td>
+                            <td>-20</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-demo">
+                    <h2>Configurar Presupuesto</h2>
+                    <form>
+                        <label>Mes</label>
+                        <input type="month" />
+                        <label>Categoría</label>
+                        <input type="text" placeholder="Categoría" />
+                        <label>Monto estimado</label>
+                        <input type="number" placeholder="Monto" />
+                        <button type="submit">Guardar</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 Finanzas Personales Web. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Modal de ayuda -->
+<div id="helpModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(24,26,27,0.85); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:center; position:relative;">
+        <button id="closeHelp" style="position:absolute; top:12px; right:12px; background:#58a6ff; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:1.2rem; cursor:pointer;">×</button>
+<!-- Imagen de Piggy Helper eliminada -->
+        <h2 style="color:#58a6ff;">¿Necesitas ayuda?</h2>
+        <p style="color:#e1e4e8;">Este es tu asistente de finanzas PocketPiggy.<br>¡Aquí puedes controlar tus ingresos, gastos y presupuestos!</p>
+    </div>
+</div>
+
+<script>
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const closeHelp = document.getElementById('closeHelp');
+    helpBtn.onclick = () => helpModal.style.display = 'flex';
+    closeHelp.onclick = () => helpModal.style.display = 'none';
+    window.onclick = (e) => {
+        if (e.target === helpModal) helpModal.style.display = 'none';
+    };
+</script>
+</body>
+</html>
