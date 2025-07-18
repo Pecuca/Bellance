@@ -7,41 +7,45 @@
     <link rel="stylesheet" href="./assets/styles/main.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-    <h1 style="display: flex; align-items: center; gap: 12px;">
-        PocketPiggy
-    </h1>
-    <p>Controla tus ingresos, gastos y presupuestos de manera sencilla.</p>
-</header>
-        <nav>
-            <a href="#" class="active">Dashboard</a>
-            <a href="#">Transacciones</a>
-            <a href="#">Categorías</a>
-            <a href="#">Presupuestos</a>
-        </nav>
-        <main>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="logo-circle">PP</span>
+                </div>
+                <h1>PocketPiggy</h1>
+                <div class="sidebar-user">
+                    <span class="user-avatar">JD</span>
+                    <span class="user-name">Juan Demo</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Transacciones</a>
+                <a href="#">Categorías</a>
+                <a href="#">Presupuestos</a>
+            </nav>
+            <div class="sidebar-quick">
+                <div class="sidebar-balance">
+                    <span class="sidebar-balance-label">Balance actual</span>
+                    <span class="sidebar-balance-value">$1,300</span>
+                </div>
+                <button class="sidebar-btn">Ajustes</button>
+                <button class="sidebar-btn logout">Cerrar sesión</button>
+            </div>
+            <div class="sidebar-help">
+                <button class="sidebar-btn help" id="helpBtn">¿Necesitas ayuda?</button>
+            </div>
+        </aside>
+        <div class="container">
+            <header>
+                <p>Controla tus ingresos, gastos y presupuestos de manera sencilla.</p>
+            </header>
+            <main>
             <!-- Dashboard -->
             <section id="dashboard">
-                <h2>Resumen Mensual</h2>
-                <div class="summary-box">
-                    <div class="summary-item">
-                        <span>$2,500</span>
-                        Ingresos
-                    </div>
-                    <div class="summary-item">
-                        <span>$1,200</span>
-                        Gastos
-                    </div>
-                    <div class="summary-item">
-                        <span>$1,300</span>
-                        Balance
-                    </div>
-                </div>
-                <div>
-                    <h2>Comparativa gastos estimados vs reales</h2>
-                    <!-- Imagen de gráfico eliminada -->
-                </div>
+                <h2>¡Bienvenido a tu Dashboard!</h2>
+                <p style="color:#8b949e; margin-bottom:32px;">Aquí verás un resumen de tu situación financiera y accesos rápidos a tus funciones principales.</p>
             </section>
             <!-- Transacciones -->
             <section id="transactions">
@@ -157,10 +161,11 @@
                     </form>
                 </div>
             </section>
-        </main>
-        <footer>
-            <p>&copy; 2025 Finanzas Personales Web. Todos los derechos reservados.</p>
-        </footer>
+            </main>
+            <footer>
+                <p>&copy; 2025 Finanzas Personales Web. Todos los derechos reservados.</p>
+            </footer>
+        </div>
     </div>
 
     <!-- Modal de ayuda -->
