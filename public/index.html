@@ -30,6 +30,7 @@
                     <span class="sidebar-balance-label">Balance actual</span>
                     <span class="sidebar-balance-value">$1,300</span>
                 </div>
+
                 <button class="sidebar-btn">Ajustes</button>
                 <button class="sidebar-btn logout">Cerrar sesión</button>
             </div>
@@ -42,13 +43,48 @@
                 <p>Controla tus ingresos, gastos y presupuestos de manera sencilla.</p>
             </header>
             <main>
-            <!-- Dashboard -->
-            <section id="dashboard">
+            <section id="dashboard" class="view-section">
                 <h2>¡Bienvenido a tu Dashboard!</h2>
                 <p style="color:#8b949e; margin-bottom:32px;">Aquí verás un resumen de tu situación financiera y accesos rápidos a tus funciones principales.</p>
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <span>$2,500</span>
+                        Ingresos
+                    </div>
+                    <div class="summary-item">
+                        <span>$1,200</span>
+                        Gastos
+                    </div>
+                    <div class="summary-item">
+                        <span>$1,300</span>
+                        Balance
+                    </div>
+                </div>
+                <div>
+                    <h2>Comparativa gastos estimados vs reales</h2>
+                    <!-- Aquí puedes agregar un gráfico en el futuro -->
+                </div>
             </section>
-            <!-- Transacciones -->
-            <section id="transactions">
+            <section id="transactions" class="view-section" style="display:none;">
+                <div class="form-demo" style="margin-bottom: 28px;">
+                    <h2>Registrar/Editar Transacción</h2>
+                    <form>
+                        <label>Tipo</label>
+                        <select>
+                            <option>Ingreso</option>
+                            <option>Egreso</option>
+                        </select>
+                        <label>Monto</label>
+                        <input type="number" placeholder="Monto" />
+                        <label>Fecha</label>
+                        <input type="date" />
+                        <label>Categoría</label>
+                        <input type="text" placeholder="Categoría" />
+                        <label>Descripción</label>
+                        <input type="text" placeholder="Descripción" />
+                        <button type="submit">Guardar</button>
+                    </form>
+                </div>
                 <h2>Lista de Transacciones</h2>
                 <table>
                     <thead>
@@ -77,28 +113,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="form-demo">
-                    <h2>Registrar/Editar Transacción</h2>
-                    <form>
-                        <label>Tipo</label>
-                        <select>
-                            <option>Ingreso</option>
-                            <option>Egreso</option>
-                        </select>
-                        <label>Monto</label>
-                        <input type="number" placeholder="Monto" />
-                        <label>Fecha</label>
-                        <input type="date" />
-                        <label>Categoría</label>
-                        <input type="text" placeholder="Categoría" />
-                        <label>Descripción</label>
-                        <input type="text" placeholder="Descripción" />
-                        <button type="submit">Guardar</button>
-                    </form>
-                </div>
             </section>
-            <!-- Categorías -->
-            <section id="categories">
+            <section id="categories" class="view-section" style="display:none;">
                 <h2>Gestión de Categorías</h2>
                 <ul>
                     <li>Alimentación <button>Editar</button> <button>Eliminar</button></li>
@@ -118,8 +134,7 @@
                     </form>
                 </div>
             </section>
-            <!-- Presupuestos -->
-            <section id="budgets">
+            <section id="budgets" class="view-section" style="display:none;">
                 <h2>Configuración de Presupuestos</h2>
                 <table>
                     <thead>
@@ -179,6 +194,29 @@
 </div>
 
 <script>
+
+    // Navegación de vistas del layout
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    const views = document.querySelectorAll('.view-section');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Si es el link de transacción, no cambiar vista
+            if (link.id === 'toggleTransForm') return;
+            e.preventDefault();
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            views.forEach(view => view.style.display = 'none');
+            if (link.textContent.includes('Dashboard')) {
+                document.getElementById('dashboard').style.display = 'block';
+            } else if (link.textContent.includes('Transacciones')) {
+                document.getElementById('transactions').style.display = 'block';
+            } else if (link.textContent.includes('Categorías')) {
+                document.getElementById('categories').style.display = 'block';
+            } else if (link.textContent.includes('Presupuestos')) {
+                document.getElementById('budgets').style.display = 'block';
+            }
+        });
+    });
     const helpBtn = document.getElementById('helpBtn');
     const helpModal = document.getElementById('helpModal');
     const closeHelp = document.getElementById('closeHelp');
@@ -186,6 +224,18 @@
     closeHelp.onclick = () => helpModal.style.display = 'none';
     window.onclick = (e) => {
         if (e.target === helpModal) helpModal.style.display = 'none';
+    };
+
+    // Mostrar/ocultar formulario de transacción en sidebar
+    const toggleTransForm = document.getElementById('toggleTransForm');
+    const sidebarTransForm = document.getElementById('sidebarTransForm');
+    toggleTransForm.onclick = (e) => {
+        e.preventDefault();
+        if (sidebarTransForm.style.display === 'none') {
+            sidebarTransForm.style.display = 'block';
+        } else {
+            sidebarTransForm.style.display = 'none';
+        }
     };
 </script>
 </body>
