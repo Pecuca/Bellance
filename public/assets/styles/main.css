@@ -1,22 +1,40 @@
+/* Botón flotante de ayuda */
+.floating-help {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #39a19e;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 2px 8px rgba(20,23,28,0.18);
+    cursor: pointer;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+.floating-help:hover {
+    background: #2f8683;
+    color: #fff;
+}
 .sidebar-logo {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
 }
-.logo-circle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: #58a6ff;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    font-weight: bold;
-    box-shadow: 0 2px 8px rgba(20,23,28,0.10);
+.sidebar-logo img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    display: block;
     margin: 0 auto;
+    border-radius: 0;
 }
 .sidebar-user {
     display: flex;
@@ -63,7 +81,7 @@
     display: block;
 }
 .sidebar-balance-value {
-    color: #58a6ff;
+    color: #8bf9df;
     font-size: 1.2rem;
     font-weight: bold;
     display: block;
@@ -93,33 +111,14 @@
     background: #ff7675;
     color: #fff;
 }
-.sidebar-help {
-    margin-top: auto;
-    padding: 18px 0 18px 0;
-    text-align: center;
-}
-.sidebar-btn.help {
-    background: #58a6ff;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 8px 22px;
-    box-shadow: 0 2px 8px rgba(20,23,28,0.10);
-    transition: background 0.2s, color 0.2s;
-}
-.sidebar-btn.help:hover {
-    background: #1f6feb;
-    color: #fff;
-}
+
 .layout {
     display: flex;
     min-height: 100vh;
 }
 .sidebar {
     width: 220px;
-    background: #181a1b;
+    background: #58bbab;
     color: #e1e4e8;
     display: flex;
     flex-direction: column;
@@ -129,12 +128,12 @@
     z-index: 10;
 }
 .sidebar-header {
-    padding: 32px 0 18px 0;
+    padding: 12px 0 18px 0;
     text-align: center;
     border-bottom: 1px solid #22272e;
 }
 .sidebar-header h1 {
-    color: #58a6ff;
+    color: #ffffff;
     font-size: 2rem;
     margin: 0;
     font-weight: 700;
@@ -157,10 +156,16 @@
     border-left: 4px solid transparent;
     margin-right: 12px;
 }
-.sidebar-nav a.active, .sidebar-nav a:hover {
-    background: #22272e;
-    color: #58a6ff;
-    border-left: 4px solid #58a6ff;
+.sidebar-nav a.active{
+    background: #1b987f;
+    color: #fccd2c;
+    border-left: 4px solid #fccd2c;
+}
+
+.sidebar-nav a:hover {
+    background: #1b987f;
+    color: #f6f7e3;
+    border-left: 4px solid #f6f7e3;
 }
 @media (max-width: 900px) {
     .layout {
@@ -198,7 +203,8 @@
     }
 }
 body {
-    background: #181a1b;
+    background: #181a1b url('../img/ACNH_Wallpaper.jpg') no-repeat center center fixed;
+    background-size: cover;
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     color: #e1e4e8;
