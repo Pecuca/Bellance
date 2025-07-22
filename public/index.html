@@ -7,7 +7,26 @@
     <link rel="stylesheet" href="./assets/styles/main.css">
 </head>
 <body>
-    <div class="layout">
+    <div id="loginView" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#22272e;">
+        <div style="background:#2d333b; padding:32px 24px; border-radius:16px; box-shadow:0 4px 24px rgba(20,23,28,0.15); min-width:320px; text-align:center;">
+            <h2 style="color:#58a6ff; margin-bottom:24px;">Iniciar Sesión</h2>
+            <form id="loginForm">
+                <input type="text" id="loginUser" placeholder="Usuario" style="margin-bottom:12px; width:90%; padding:8px;" required /><br>
+                <input type="password" id="loginPass" placeholder="Contraseña" style="margin-bottom:18px; width:90%; padding:8px;" required /><br>
+                <button type="submit" style="background:#58a6ff; color:#fff; border:none; border-radius:8px; padding:10px 24px; font-size:1rem; cursor:pointer;">Entrar</button>
+            </form>
+            <p id="loginMsg" style="color:#e74c3c; margin-top:12px; display:none;"></p>
+            <hr style="margin:24px 0; border:none; border-top:1px solid #444;">
+            <h3 style="color:#8b949e;">¿No tienes cuenta?</h3>
+            <form id="registerForm">
+                <input type="text" id="regUser" placeholder="Usuario" style="margin-bottom:12px; width:90%; padding:8px;" required /><br>
+                <input type="password" id="regPass" placeholder="Contraseña" style="margin-bottom:18px; width:90%; padding:8px;" required /><br>
+                <button type="submit" style="background:#27ae60; color:#fff; border:none; border-radius:8px; padding:10px 24px; font-size:1rem; cursor:pointer;">Registrarse</button>
+            </form>
+            <p id="regMsg" style="color:#e74c3c; margin-top:12px; display:none;"></p>
+        </div>
+    </div>
+    <div class="layout" style="display:none;">
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">

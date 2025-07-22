@@ -1,3 +1,56 @@
+// --- Login y registro ---
+document.addEventListener('DOMContentLoaded', function() {
+    const loginView = document.getElementById('loginView');
+    const mainLayout = document.querySelector('.layout');
+    const loginForm = document.getElementById('loginForm');
+    const loginMsg = document.getElementById('loginMsg');
+    const registerForm = document.getElementById('registerForm');
+    const regMsg = document.getElementById('regMsg');
+
+    // Ocultar app hasta login
+    if (mainLayout) mainLayout.style.display = 'none';
+    if (loginView) loginView.style.display = 'flex';
+
+    // Login
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            window.getUsuario(user).then(u => {
+                if (u && u.password === pass) {
+                    loginMsg.style.display = 'none';
+                    loginView.style.display = 'none';
+                    mainLayout.style.display = 'block';
+                } else {
+                    loginMsg.textContent = 'Usuario o contraseña incorrectos.';
+                    loginMsg.style.display = 'block';
+                }
+            });
+        });
+    }
+
+    // Registro
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('regUser').value.trim();
+            const pass = document.getElementById('regPass').value;
+            if (!user || !pass) return;
+            window.getUsuario(user).then(u => {
+                if (u) {
+                    regMsg.textContent = 'El usuario ya existe.';
+                    regMsg.style.display = 'block';
+                } else {
+                    window.addUsuario({username: user, password: pass}).then(() => {
+                        regMsg.textContent = 'Usuario registrado. Ahora puedes iniciar sesión.';
+                        regMsg.style.display = 'block';
+                    });
+                }
+            });
+        });
+    }
+});
 // Navegación de vistas del layout
 const navLinks = document.querySelectorAll('.sidebar-nav a');
 const views = document.querySelectorAll('.view-section');
