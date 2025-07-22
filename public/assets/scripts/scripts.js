@@ -258,3 +258,22 @@ if (chartTypeSelect && chartCanvas) {
         });
     }
 }
+
+// --- LOGOUT ---
+const logoutBtn = document.querySelector('.logout');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+        // Limpiar usuario actual (si usas window.currentUser, localStorage, etc.)
+        if (window.currentUser) window.currentUser = null;
+        // Ocultar dashboard/layout y mostrar login
+        document.querySelector('.layout').style.display = 'none';
+        document.getElementById('loginView').style.display = 'flex';
+        // Limpiar mensajes de error
+        document.getElementById('loginMsg').style.display = 'none';
+        document.getElementById('regMsg').style.display = 'none';
+        // Limpiar formularios
+        document.getElementById('loginForm').reset();
+        document.getElementById('registerForm').reset();
+    });
+}
+// --- END LOGOUT ---
