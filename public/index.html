@@ -9,7 +9,7 @@
 <body>
     <div id="loginView" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#22272e; position:relative;">
         <img src="./assets/img/ACNH_Wallpaper.jpg" alt="Fondo" style="position:absolute; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:0; opacity:0.25; pointer-events:none;">
-        <div style="background:#2d333b; padding:32px 24px; border-radius:16px; box-shadow:0 4px 24px rgba(20,23,28,0.15); min-width:320px; text-align:center; z-index:1; opacity:1;">
+        <div style="background:#2d333b; padding:32px 24px; border-radius:16px; box-shadow:0 4px 24px rgba(20,23,28,0.15); min-width:320px; text-align:center; z-index:2; opacity:1; position:relative;">
             <h2 style="color:#58a6ff; margin-bottom:24px;">Iniciar Sesión</h2>
             <form id="loginForm">
                 <input type="text" id="loginUser" placeholder="Usuario" style="margin-bottom:12px; width:90%; padding:8px; background:#22272e; color:#fff; border:1px solid #444; border-radius:8px;" required /><br>
@@ -231,6 +231,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<script src="./assets/scripts/indexeddb.js"></script>
 <script src="./assets/scripts/scripts.js"></script>
 </body>
 </html>

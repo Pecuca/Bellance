@@ -17,16 +17,23 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const user = document.getElementById('loginUser').value.trim();
             const pass = document.getElementById('loginPass').value;
-            window.getUsuario(user).then(u => {
-                if (u && u.password === pass) {
-                    loginMsg.style.display = 'none';
+            if (!user || !pass) {
+                loginMsg.textContent = 'Debes ingresar usuario y contraseña.';
+                loginMsg.style.display = 'block';
+                return;
+            }
+            // Permitir cualquier usuario y contraseña
+            loginMsg.style.display = 'none';
+            setTimeout(() => {
+                if (loginView) {
                     loginView.style.display = 'none';
-                    mainLayout.style.display = 'block';
-                } else {
-                    loginMsg.textContent = 'Usuario o contraseña incorrectos.';
-                    loginMsg.style.display = 'block';
+                    loginView.style.zIndex = '0';
                 }
-            });
+                if (mainLayout) {
+                    mainLayout.style.display = '';
+                    mainLayout.style.zIndex = '1';
+                }
+            }, 100);
         });
     }
 
