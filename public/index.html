@@ -61,8 +61,22 @@
                     </div>
                 </div>
                 <div>
-                    <h2>Comparativa gastos estimados vs reales</h2>
-                    <!-- Aquí puedes agregar un gráfico en el futuro -->
+                    <h2>Visualización de Finanzas</h2>
+                    <div style="margin-bottom:16px;">
+                        <label for="chartType" style="font-weight:bold;">Tipo de gráfica:</label>
+                        <select id="chartType" style="margin-left:8px; margin-right:16px;">
+                            <option value="gastosCategoria">Gastos por categoría del mes (Dona)</option>
+                            <option value="balanceMensual">Balance real vs estimado (Líneas)</option>
+                            <option value="ingresosComparativo">Ingresos estimados vs reales (Barras)</option>
+                            <option value="evolucionBalance">Evolución del balance mensual (Líneas)</option>
+                            <option value="distribucionGastosIngresos">Distribución de gastos vs ingresos (Barras)</option>
+                        </select>
+                        <label for="monthFilter" style="font-weight:bold;">Mes:</label>
+                        <input type="month" id="monthFilter" style="margin-left:8px;" />
+                    </div>
+                    <div style="background:#22272e; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(20,23,28,0.10);">
+                        <canvas id="finanzasChart" width="600" height="300"></canvas>
+                    </div>
                 </div>
             </section>
             <section id="transactions" class="view-section" style="display:none;">
@@ -188,17 +202,15 @@
     <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:center; position:relative;">
         <button id="closeHelp" style="position:absolute; top:12px; right:12px; background:#58a6ff; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:1.2rem; cursor:pointer;">×</button>
         <h2 style="color:#58a6ff;">¿Necesitas ayuda?</h2>
-        <p style="color:#e1e4e8;">Este es tu asistente de finanzas PocketPiggy.<br>¡Aquí puedes controlar tus ingresos, gastos y presupuestos!</p>
+        <p style="color:#e1e4e8;">Este es tu asistente de finanzas Bellance.<br>¡Aquí puedes controlar tus ingresos, gastos y presupuestos!</p>
     </div>
 </div>
 
 <!-- Botón flotante de ayuda -->
 <button id="helpBtn" class="floating-help">?</button>
 
-<script>
-
-    // ...existing code...
-</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <script src="./assets/scripts/scripts.js"></script>
 </body>
 </html>
