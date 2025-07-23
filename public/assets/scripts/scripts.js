@@ -711,7 +711,7 @@ function mesToString(mes) {
 // Cargar presupuestos al cambiar el mes
 const presupuestoMesInput = document.querySelector('#budgets input[type="month"]');
 if (presupuestoMesInput) {
-    presupuestoMesInput.addEventListener('change', loadPresupuestos);
+    presupuestoMesInput.addEventListener('change', loadPresupuestosMesConfigTable);
 }
 
 // Actualizar dashboard con los datos del presupuesto y los montos reales del mes seleccionado
@@ -795,10 +795,15 @@ if (deleteCatCancel) deleteCatCancel.onclick = closeDeleteCatModal;
 if (deleteCatConfirm) {
     deleteCatConfirm.onclick = function() {
         if (catToDeleteId !== null) {
-            window.deleteCategoria(catToDeleteId).then(() => {
-                loadCategorias();
-                closeDeleteCatModal();
-            });
+            window.deleteCategoria(catToDeleteId)
+                .then(() => {
+                    loadCategorias();
+                    closeDeleteCatModal();
+                })
+                .catch(err => {
+                    showGlobalMsg("No se pudo eliminar la categoría. Puede estar en uso en alguna transacción.", 4000);
+                    closeDeleteCatModal();
+                });
         }
     };
 }
