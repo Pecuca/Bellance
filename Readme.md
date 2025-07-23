@@ -4,7 +4,7 @@ Sistema de Finanzas Personales - Bellance
 
 ## Descripción
 
-PocketPiggyPlanner es una aplicación web para la gestión de finanzas personales. Permite registrar ingresos, egresos, categorías, presupuestos mensuales y visualizar gráficos de tu situación financiera. Todo funciona localmente en tu navegador usando IndexedDB, sin necesidad de backend.
+Bellance es una aplicación web para la gestión de finanzas personales. Permite registrar ingresos, egresos, categorías, presupuestos mensuales y visualizar gráficos de tu situación financiera. Todo funciona localmente en tu navegador usando IndexedDB, sin necesidad de backend.
 
 ## Requisitos
 
@@ -15,7 +15,7 @@ PocketPiggyPlanner es una aplicación web para la gestión de finanzas personale
 
 1. **Descarga o clona este repositorio**  
    ```
-   git clone https://github.com/tuusuario/PocketPiggyPlanner.git
+   git clone https://github.com/tuusuario/Bellance.git
    ```
 
 2. **Abre el archivo `index.html`**  
