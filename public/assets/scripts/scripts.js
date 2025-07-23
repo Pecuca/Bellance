@@ -614,7 +614,7 @@ if (presupuestoMesInput) {
     presupuestoMesInput.addEventListener('change', loadPresupuestos);
 }
 
-// Actualizar dashboard con los datos del presupuesto
+// Actualizar dashboard con los datos del presupuesto REAL del mes seleccionado
 function updateDashboardSummary() {
     const monthInput = document.getElementById('monthFilter');
     let mes = '';
@@ -625,13 +625,15 @@ function updateDashboardSummary() {
         mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
     if (!currentUser) return;
-    window.getPresupuestosByUserAndMonth(currentUser, mes).then(presupuestos => { // <--- corregido
+    // Obtener el presupuesto real del mes seleccionado
+    window.getPresupuestosByUserAndMonth(currentUser, mes).then(presupuestos => {
         let ingreso = 0;
         let egreso = 0;
         presupuestos.forEach(p => {
             ingreso += Number(p.ingresoEsperado) || 0;
             egreso += Number(p.egresoEsperado) || 0;
         });
+        // El balance es ingreso - egreso (presupuestado)
         const balance = ingreso - egreso;
         const summaryItems = document.querySelectorAll('.summary-item span');
         if (summaryItems.length >= 3) {
