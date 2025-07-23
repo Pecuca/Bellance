@@ -877,3 +877,40 @@ footer {
         padding: 18px 6vw;
     }
 }
+
+/* Estilo personalizado para input[type="date"] */
+input[type="date"].chart-select,
+input[type="date"] {
+    background: #f8f6e8;
+    color: #574c42;
+    border: 1.5px solid #abd7c7;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+    box-shadow: 0 2px 8px rgba(20,23,28,0.05);
+    transition: border 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+input[type="date"].chart-select:focus,
+input[type="date"]:focus {
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 2px #58a6ff33;
+}
+
+/* Cambia el icono del calendario en Chrome/Edge */
+input[type="date"].chart-select::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(40%) sepia(80%) saturate(300%) hue-rotate(120deg);
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+/* Oculta el icono en Firefox y agrega uno propio si lo deseas */
+input[type="date"].chart-select::-moz-calendar-picker-indicator,
+input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(40%) sepia(80%) saturate(300%) hue-rotate(120deg);
+    cursor: pointer;
+    opacity: 0.8;
+}

@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         transacciones = trs;
                         renderChart(chartTypeSelect.value); // Actualiza los gráficos con los datos reales
                         renderTransTable(); // Renderiza la tabla de transacciones
+                        updateDashboardSummary(); // <-- Añadido: actualiza el dashboard con los datos cargados
                     });
 
                     // Nuevo: Cargar categorías del usuario
