@@ -202,23 +202,32 @@ function getMonthString(date) {
 
 function getFilteredTransacciones(month) {
     if (!month) return transacciones;
-    return transacciones.filter(t => getMonthString(t.fecha) === month);
+    // Si el mes tiene formato YYYY-MM, filtra por ese mes
+    // Si el mes tiene formato YYYY-MM-DD, filtra solo ese día
+    if (/^\d{4}-\d{2}$/.test(month)) {
+        return transacciones.filter(t => getMonthString(t.fecha) === month);
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(month)) {
+        return transacciones.filter(t => t.fecha === month);
+    }
+    return transacciones;
 }
 
-function getGastosPorCategoriaFiltrado(month) {
-    const cats = ['Alimentación', 'Transporte', 'Ocio', 'Servicios', 'Salud', 'Educación', 'Otros'];
-    const filtered = getFilteredTransacciones(month).filter(t => t.tipo === 'Egreso');
-    // Solo incluye categorías con gasto > 0
-    const result = cats.map(cat => {
-        const total = filtered.filter(t => t.categoria === cat).reduce((sum, t) => sum + t.monto, 0);
-        return { cat, total };
-    }).filter(item => item.total > 0);
-    return {
-        labels: result.map(item => item.cat),
-        data: result.map(item => item.total)
-    };
+// --- NUEVO: Modo de filtro para gráficos ---
+let chartMonthMode = true; // true: vista anual (por mes), false: vista mensual (por día)
+
+if (monthFilter) {
+    // Cambia el tipo de filtro según si el usuario selecciona un mes o no
+    monthFilter.addEventListener('change', function() {
+        if (monthFilter.value) {
+            chartMonthMode = false; // Mostrar por días del mes seleccionado
+        } else {
+            chartMonthMode = true; // Mostrar por meses del año
+        }
+        renderChart(chartTypeSelect.value);
+    });
 }
 
+// --- Modifica los gráficos para soportar ambos modos ---
 const chartData = {
     gastosCategoria: function(month) {
         const gastos = getGastosPorCategoriaFiltrado(month);
@@ -393,10 +402,56 @@ const chartData = {
             },
             options: {responsive: true, plugins: {legend: {display: false}}}
         };
+    },
+    // NUEVO: gráfico de barras por días del mes seleccionado
+    gastosPorDia: function(month) {
+        if (!month) return chartData.gastosCategoria();
+        // Genera los días del mes seleccionado
+        const [year, mes] = month.split('-');
+        const diasEnMes = new Date(year, mes, 0).getDate();
+        const labels = [];
+        for (let d = 1; d <= diasEnMes; d++) {
+            labels.push(`${year}-${mes}-${String(d).padStart(2, '0')}`);
+        }
+        const gastosPorDia = labels.map(dia => {
+            return getFilteredTransacciones(dia)
+                .filter(t => t.tipo === 'Egreso')
+                .reduce((sum, t) => sum + Number(t.monto), 0);
+        });
+        return {
+            type: 'bar',
+            data: {
+                labels: labels.map(d => d.slice(8)), // solo día
+                datasets: [{
+                    label: 'Gastos por Día',
+                    data: gastosPorDia,
+                    backgroundColor: '#e74c3c'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {legend: {position: 'bottom'}}
+            }
+        };
     }
 };
 
-// Modifica renderChart para soportar promesas en los gráficos dinámicos
+// Asegúrate de que esta función esté definida antes de chartData:
+function getGastosPorCategoriaFiltrado(month) {
+    const cats = ['Alimentación', 'Transporte', 'Ocio', 'Servicios', 'Salud', 'Educación', 'Otros'];
+    const filtered = getFilteredTransacciones(month).filter(t => t.tipo === 'Egreso');
+    // Solo incluye categorías con gasto > 0
+    const result = cats.map(cat => {
+        const total = filtered.filter(t => t.categoria === cat).reduce((sum, t) => sum + t.monto, 0);
+        return { cat, total };
+    }).filter(item => item.total > 0);
+    return {
+        labels: result.map(item => item.cat),
+        data: result.map(item => item.total)
+    };
+}
+
+// --- Modifica renderChart para elegir el gráfico correcto según el modo ---
 function renderChart(type) {
     if (!chartCanvas) return;
     if (finanzasChart) {
@@ -405,9 +460,14 @@ function renderChart(type) {
     let configFn = chartData[type];
     const month = monthFilter ? monthFilter.value : '';
     let configPromise;
+
+    // Si está en modo mensual y el gráfico es de gastos por categoría, balance, etc, muestra por días
+    if (!chartMonthMode && (type === "gastosCategoria" || type === "balanceMensual" || type === "ingresosComparativo" || type === "evolucionBalance")) {
+        configFn = chartData.gastosPorDia;
+    }
+
     if (typeof configFn === 'function') {
-        // Si la función devuelve una promesa, espera a que se resuelva
-        const result = configFn(type === "gastosCategoria" || type === "distribucionGastosIngresos" ? month : undefined);
+        const result = configFn(!chartMonthMode ? month : undefined);
         if (result && typeof result.then === "function") {
             configPromise = result;
         } else {
