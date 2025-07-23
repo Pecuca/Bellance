@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.getUsuario(user).then(u => {
                 if (u) {
                     regMsg.textContent = "El usuario ya existe.";
+                    showGlobalMsg("El usuario ya existe.", 3500);
                 } else {
                     window.addUsuario({username: user, password: pass}).then(() => {
                         // Categorías predefinidas
@@ -91,10 +92,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             )
                         ).then(() => {
                             regMsg.textContent = "Usuario registrado correctamente.";
+                            showGlobalMsg("Usuario registrado correctamente.", 3500);
                             // Aquí puedes hacer login automático o mostrar mensaje
+                        }).catch(err => {
+                            regMsg.textContent = "Error al registrar las categorías.";
+                            showGlobalMsg("Error al registrar las categorías.", 3500);
                         });
+                    }).catch(err => {
+                        regMsg.textContent = "Error al registrar el usuario.";
+                        showGlobalMsg("Error al registrar el usuario.", 3500);
                     });
                 }
+            }).catch(err => {
+                regMsg.textContent = "Error al verificar el usuario.";
+                showGlobalMsg("Error al verificar el usuario.", 3500);
             });
         });
     }
