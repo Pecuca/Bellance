@@ -403,30 +403,38 @@ const chartData = {
             options: {responsive: true, plugins: {legend: {display: false}}}
         };
     },
-    // NUEVO: gráfico de barras por días del mes seleccionado
-    gastosPorDia: function(month) {
+    // NUEVO: gráfico de líneas por días del mes seleccionado (balance real por día)
+    ingresosEgresosPorDia: function(month) {
         if (!month) return chartData.gastosCategoria();
-        // Genera los días del mes seleccionado
         const [year, mes] = month.split('-');
         const diasEnMes = new Date(year, mes, 0).getDate();
         const labels = [];
         for (let d = 1; d <= diasEnMes; d++) {
             labels.push(`${year}-${mes}-${String(d).padStart(2, '0')}`);
         }
-        const gastosPorDia = labels.map(dia => {
-            return getFilteredTransacciones(dia)
+        // Calcula el balance real por día (ingresos - egresos)
+        const balancePorDia = labels.map(dia => {
+            const ingresos = getFilteredTransacciones(dia)
+                .filter(t => t.tipo === 'Ingreso')
+                .reduce((sum, t) => sum + Number(t.monto), 0);
+            const egresos = getFilteredTransacciones(dia)
                 .filter(t => t.tipo === 'Egreso')
                 .reduce((sum, t) => sum + Number(t.monto), 0);
+            return ingresos - egresos;
         });
         return {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: labels.map(d => d.slice(8)), // solo día
-                datasets: [{
-                    label: 'Gastos por Día',
-                    data: gastosPorDia,
-                    backgroundColor: '#e74c3c'
-                }]
+                datasets: [
+                    {
+                        label: 'Balance Real',
+                        data: balancePorDia,
+                        borderColor: '#58a6ff',
+                        backgroundColor: 'rgba(88,166,255,0.08)',
+                        fill: true
+                    }
+                ]
             },
             options: {
                 responsive: true,
@@ -461,9 +469,10 @@ function renderChart(type) {
     const month = monthFilter ? monthFilter.value : '';
     let configPromise;
 
-    // Si está en modo mensual y el gráfico es de gastos por categoría, balance, etc, muestra por días
+    // Si está en modo mensual y el gráfico es de gastosCategoria, balanceMensual, ingresosComparativo o evolucionBalance,
+    // muestra ingresos y egresos reales por día en gráfico de líneas
     if (!chartMonthMode && (type === "gastosCategoria" || type === "balanceMensual" || type === "ingresosComparativo" || type === "evolucionBalance")) {
-        configFn = chartData.gastosPorDia;
+        configFn = chartData.ingresosEgresosPorDia;
     }
 
     if (typeof configFn === 'function') {
