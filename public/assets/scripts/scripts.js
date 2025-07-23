@@ -33,6 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     mainLayout.style.display = '';
                     mainLayout.style.zIndex = '1';
                 }
+                // Cambiar nombre en el layout
+                const sidebarUserName = document.getElementById('sidebarUserName');
+                if (sidebarUserName) sidebarUserName.textContent = user;
+
+                // Actualizar avatar con las 2 primeras letras
+                const userAvatar = document.querySelector('.user-avatar');
+                if (userAvatar) {
+                    userAvatar.textContent = user.slice(0, 2).toUpperCase();
+                }
             }, 100);
         });
     }
@@ -277,3 +286,81 @@ if (logoutBtn) {
     });
 }
 // --- END LOGOUT ---
+// --- AJUSTES ---
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettings = document.getElementById('closeSettings');
+const editProfileForm = document.getElementById('editProfileForm');
+const changePassForm = document.getElementById('changePassForm');
+const currencyFormat = document.getElementById('currencyFormat');
+const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+const settingsMsg = document.getElementById('settingsMsg');
+
+// Mostrar/ocultar modal de ajustes
+if (settingsBtn && settingsModal && closeSettings) {
+    settingsBtn.onclick = () => settingsModal.style.display = 'flex';
+    closeSettings.onclick = () => settingsModal.style.display = 'none';
+    window.addEventListener('click', (e) => {
+        if (e.target === settingsModal) settingsModal.style.display = 'none';
+    });
+}
+
+// Editar perfil (nombre de usuario)
+if (editProfileForm) {
+    editProfileForm.onsubmit = function(e) {
+        e.preventDefault();
+        const newName = document.getElementById('editUsername').value.trim();
+        const sidebarUserName = document.getElementById('sidebarUserName');
+        if (sidebarUserName && newName) sidebarUserName.textContent = newName;
+
+        // Actualizar avatar con las 2 primeras letras del nuevo nombre
+        const userAvatar = document.querySelector('.user-avatar');
+        if (userAvatar && newName) {
+            userAvatar.textContent = newName.slice(0, 2).toUpperCase();
+        }
+
+        // Aquí deberías actualizar el nombre en IndexedDB y en la UI
+        settingsMsg.textContent = 'Nombre de usuario actualizado (demo)';
+        settingsMsg.style.display = 'block';
+        setTimeout(() => settingsMsg.style.display = 'none', 2000);
+    };
+}
+
+// Cambiar contraseña
+if (changePassForm) {
+    changePassForm.onsubmit = function(e) {
+        e.preventDefault();
+        // Aquí deberías validar y actualizar la contraseña en IndexedDB
+        settingsMsg.textContent = 'Contraseña cambiada (demo)';
+        settingsMsg.style.display = 'block';
+        setTimeout(() => settingsMsg.style.display = 'none', 2000);
+    };
+}
+
+// Cambiar formato de moneda
+if (currencyFormat) {
+    currencyFormat.onchange = function() {
+        // Aquí puedes guardar la preferencia en localStorage o IndexedDB
+        settingsMsg.textContent = 'Formato de moneda actualizado (demo)';
+        settingsMsg.style.display = 'block';
+        setTimeout(() => settingsMsg.style.display = 'none', 2000);
+    };
+}
+
+// Eliminar cuenta
+if (deleteAccountBtn) {
+    deleteAccountBtn.onclick = function() {
+        if (confirm('¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+            // Aquí deberías borrar el usuario de IndexedDB y cerrar sesión
+            settingsMsg.textContent = 'Cuenta eliminada (demo)';
+            settingsMsg.style.display = 'block';
+            setTimeout(() => {
+                settingsModal.style.display = 'none';
+                // Simular logout
+                document.querySelector('.layout').style.display = 'none';
+                document.getElementById('loginView').style.display = 'flex';
+            }, 1500);
+        }
+    };
+}
+// --- FIN AJUSTES ---
