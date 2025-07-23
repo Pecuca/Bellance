@@ -44,18 +44,16 @@
     justify-content: center;
 }
 .user-avatar {
-    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    background: #30363d;
+    color: #58a6ff;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: #58a6ff;
-    color: #fff;
-    border-radius: 50%;
-    font-weight: bold;
-    font-size: 1.1rem;
-    margin-right: 8px;
-    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 1rem;
 }
 .user-name {
     font-size: 1rem;

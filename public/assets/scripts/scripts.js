@@ -66,6 +66,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // AJUSTES: Mostrar/ocultar modal
+    const settingsBtn = document.getElementById('settingsBtn');
+    const sidebarSettingsBtn = document.getElementById('sidebarSettingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettings = document.getElementById('closeSettings');
+    if (settingsModal && closeSettings) {
+        // Abrir modal desde cualquiera de los dos botones
+        if (settingsBtn) settingsBtn.onclick = () => settingsModal.style.display = 'flex';
+        if (sidebarSettingsBtn) sidebarSettingsBtn.onclick = () => settingsModal.style.display = 'flex';
+        closeSettings.onclick = () => settingsModal.style.display = 'none';
+        settingsModal.addEventListener('click', function(e) {
+            if (e.target === settingsModal) settingsModal.style.display = 'none';
+        });
+    }
 });
 // Navegación de vistas del layout
 const navLinks = document.querySelectorAll('.sidebar-nav a');
@@ -288,6 +303,7 @@ if (logoutBtn) {
 // --- END LOGOUT ---
 // --- AJUSTES ---
 const settingsBtn = document.getElementById('settingsBtn');
+const sidebarSettingsBtn = document.getElementById('sidebarSettingsBtn');
 const settingsModal = document.getElementById('settingsModal');
 const closeSettings = document.getElementById('closeSettings');
 const editProfileForm = document.getElementById('editProfileForm');
@@ -300,7 +316,8 @@ const settingsMsg = document.getElementById('settingsMsg');
 if (settingsBtn && settingsModal && closeSettings) {
     settingsBtn.onclick = () => settingsModal.style.display = 'flex';
     closeSettings.onclick = () => settingsModal.style.display = 'none';
-    window.addEventListener('click', (e) => {
+    // Cerrar modal si se hace click fuera del contenido
+    settingsModal.addEventListener('click', function(e) {
         if (e.target === settingsModal) settingsModal.style.display = 'none';
     });
 }

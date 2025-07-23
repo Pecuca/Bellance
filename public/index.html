@@ -51,7 +51,7 @@
                     <span class="sidebar-balance-value">$1,300</span>
                 </div>
 
-                <button class="sidebar-btn">Ajustes</button>
+                <button class="sidebar-btn" id="sidebarSettingsBtn">Ajustes</button>
                 <button class="sidebar-btn logout">Cerrar sesión</button>
             </div>
             <div class="sidebar-help">
@@ -231,11 +231,10 @@
 
 <!-- Botón de ajustes -->
 <button id="settingsBtn" class="settings-btn" style="position:fixed; bottom:32px; right:32px; z-index:100;">⚙️ Ajustes</button>
-
 <!-- Modal de ajustes -->
 <div id="settingsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(24,26,27,0.85); z-index:9999; justify-content:center; align-items:center;">
   <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:left; position:relative; min-width:320px;">
-    <button id="closeSettings" style="position:absolute; top:12px; right:12px; background:#58a6ff; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:1.2rem; cursor:pointer;">×</button>
+    <button id="closeSettings" style="position:absolute; top:12px; right:12px;">×</button>
     <h2 style="color:#58a6ff;">Ajustes de Perfil</h2>
     <form id="editProfileForm" style="margin-bottom:18px;">
       <label style="color:#e1e4e8;">Nombre de usuario</label>
