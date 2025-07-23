@@ -627,6 +627,46 @@ footer {
     display: none;
 }
 
+#presupuestosMesConfigWrapper {
+    max-height: 260px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background: #f8f6e8;
+    margin-bottom: 18px;
+}
+#presupuestosMesConfigTable {
+    width: 100%;
+    min-width: 420px;
+    border-collapse: collapse;
+    background: #f8f6e8;
+}
+#presupuestosMesConfigTable th, #presupuestosMesConfigTable td {
+    padding: 10px;
+    border-bottom: 1px solid #e1e4e8;
+    text-align: left;
+    color: #574c42;
+    background: #f8f6e8;
+}
+#presupuestosMesConfigTable th {
+    background: #ece5cd;
+    color: #656056;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+#presupuestosMesConfigTable tr:last-child td {
+    border-bottom: none;
+}
+#presupuestosMesConfigWrapper::-webkit-scrollbar {
+    width: 8px;
+    background: #ece5cd;
+    border-radius: 8px;
+}
+#presupuestosMesConfigWrapper::-webkit-scrollbar-thumb {
+    background: #abd7c7;
+    border-radius: 8px;
+}
 @media (max-width: 900px) {
     .container {
         margin: 16px;

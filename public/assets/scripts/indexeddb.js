@@ -33,7 +33,14 @@ request.onupgradeneeded = function(event) {
     }
     // Crear almacén de presupuestos si no existe
     if (!db.objectStoreNames.contains("presupuestos")) {
-        db.createObjectStore("presupuestos", { keyPath: "id", autoIncrement: true });
+        const presupuestoStore = db.createObjectStore("presupuestos", { keyPath: "id", autoIncrement: true });
+        presupuestoStore.createIndex("username", "username", { unique: false }); // <-- AÑADIDO
+    } else {
+        // Si ya existe, asegúrate de que el índice "username" existe (para migraciones manuales)
+        const presupuestoStore = event.target.transaction.objectStore("presupuestos");
+        if (!presupuestoStore.indexNames.contains("username")) {
+            presupuestoStore.createIndex("username", "username", { unique: false });
+        }
     }
 };
 
@@ -182,13 +189,47 @@ window.getPresupuestosByUserAndMonth = withDBReady(function(username, mes) {
     return new Promise((resolve, reject) => {
         const tx = db.transaction("presupuestos", "readonly");
         const store = tx.objectStore("presupuestos");
-        const index = store.index("username");
-        const req = index.getAll(username);
+        // Verifica que el índice existe antes de usarlo
+        let req;
+        if (store.indexNames.contains("username")) {
+            const index = store.index("username");
+            req = index.getAll(username);
+        } else {
+            // fallback: obtener todos y filtrar manualmente
+            req = store.getAll();
+        }
         req.onsuccess = () => {
-            const presupuestos = req.result.filter(p => p.mes === mes);
+            let presupuestos = req.result;
+            if (!store.indexNames.contains("username")) {
+                presupuestos = presupuestos.filter(p => p.username === username);
+            }
+            presupuestos = presupuestos.filter(p => p.mes === mes);
             resolve(presupuestos);
         };
         req.onerror = e => reject(e);
+    });
+});
+
+// Obtener todos los presupuestos de un usuario (sin filtrar por mes)
+window.getAllPresupuestosByUser = withDBReady(function(username) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("presupuestos", "readonly");
+        const store = tx.objectStore("presupuestos");
+        let req;
+        if (store.indexNames.contains("username")) {
+            const index = store.index("username");
+            req = index.getAll(username);
+        } else {
+            req = store.getAll();
+        }
+        req.onsuccess = () => {
+            let presupuestos = req.result;
+            if (!store.indexNames.contains("username")) {
+                presupuestos = presupuestos.filter(p => p.username === username);
+            }
+            resolve(presupuestos);
+        };
+        req.onerror = (e) => reject(e);
     });
 });
 

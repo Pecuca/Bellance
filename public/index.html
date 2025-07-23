@@ -62,15 +62,15 @@
         <p style="color: #455c53; margin-bottom:32px;">Aquí verás un resumen de tu situación financiera y accesos rápidos a tus funciones principales.</p>
         <div class="summary-box">
           <div class="summary-item">
-            <span>$2,500</span>
+            <span id="dashboardIngresos">$0</span>
             Ingresos
           </div>
           <div class="summary-item">
-            <span>$1200</span>
+            <span id="dashboardGastos">$0</span>
             Gastos
           </div>
           <div class="summary-item">
-            <span>$1,300</span>
+            <span id="dashboardBalance">$0</span>
             Balance
           </div>
         </div>
@@ -136,19 +136,20 @@
       </section>
       <section id="budgets" class="view-section" style="display:none;">
         <h2>Configuración de Presupuestos</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Mes</th>
-              <th>Ingreso Esperado</th>
-              <th>Egreso Esperado</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Aquí se llenará dinámicamente -->
-          </tbody>
-        </table>
+        <div id="presupuestosMesConfigWrapper" style="max-height:260px; overflow-y:auto; border-radius:10px; border:1px solid #ccc; background:#f8f6e8; margin-bottom:18px;">
+          <table id="presupuestosMesConfigTable" style="width:100%; min-width:420px;">
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th>Ingreso Esperado</th>
+                <th>Egreso Esperado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Se llena dinámicamente -->
+            </tbody>
+          </table>
+        </div>
         <div class="form-demo">
           <h2>Configurar Presupuesto</h2>
           <form id="presupuestoForm">

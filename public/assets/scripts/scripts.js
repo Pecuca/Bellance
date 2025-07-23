@@ -180,24 +180,30 @@ function getFilteredTransacciones(month) {
     return transacciones.filter(t => getMonthString(t.fecha) === month);
 }
 
-function getGastosPorCategoria(month) {
+function getGastosPorCategoriaFiltrado(month) {
     const cats = ['Alimentación', 'Transporte', 'Ocio', 'Servicios', 'Salud', 'Educación', 'Otros'];
     const filtered = getFilteredTransacciones(month).filter(t => t.tipo === 'Egreso');
-    return cats.map(cat => {
+    // Solo incluye categorías con gasto > 0
+    const result = cats.map(cat => {
         const total = filtered.filter(t => t.categoria === cat).reduce((sum, t) => sum + t.monto, 0);
-        return total;
-    });
+        return { cat, total };
+    }).filter(item => item.total > 0);
+    return {
+        labels: result.map(item => item.cat),
+        data: result.map(item => item.total)
+    };
 }
 
 const chartData = {
     gastosCategoria: function(month) {
+        const gastos = getGastosPorCategoriaFiltrado(month);
         return {
             type: 'doughnut',
             data: {
-                labels: ['Alimentación', 'Transporte', 'Ocio', 'Servicios', 'Salud', 'Educación', 'Otros'],
+                labels: gastos.labels,
                 datasets: [{
-                    data: getGastosPorCategoria(month),
-                    backgroundColor: ['#58a6ff', '#f39c12', '#e74c3c', '#8e44ad', '#27ae60', '#d35400', '#95a5a6'],
+                    data: gastos.data,
+                    backgroundColor: ['#58a6ff', '#f39c12', '#e74c3c', '#8e44ad', '#27ae60', '#d35400', '#95a5a6'].slice(0, gastos.labels.length),
                 }]
             },
             options: {
@@ -220,63 +226,174 @@ const chartData = {
             plugins: [ChartDataLabels]
         };
     },
-    balanceMensual: {
-        type: 'line',
-        data: {
-            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
-            datasets: [
-                {label: 'Balance Estimado', data: [1200, 1300, 1400, 1500, 1600, 1700, 1800], borderColor: '#58a6ff', fill: false},
-                {label: 'Balance Real', data: [1100, 1250, 1350, 1450, 1550, 1650, 1750], borderColor: '#e74c3c', fill: false}
-            ]
-        },
-        options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+    balanceMensual: function() {
+        // Gráfico de línea: muestra el balance real y el estimado de los últimos 6 meses + actual
+        const meses = [];
+        const balancesEstimados = [];
+        const balancesReales = [];
+        const now = new Date();
+        const promesas = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const mesStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            meses.push(mesToString(mesStr));
+            promesas.push(
+                Promise.all([
+                    window.getPresupuestosByUserAndMonth(currentUser, mesStr),
+                    Promise.resolve(getFilteredTransacciones(mesStr))
+                ]).then(([presupuestos, trans]) => {
+                    let ingresoEst = 0, egresoEst = 0;
+                    if (presupuestos && presupuestos.length > 0) {
+                        ingresoEst = Number(presupuestos[0].ingresoEsperado) || 0;
+                        egresoEst = Number(presupuestos[0].egresoEsperado) || 0;
+                    }
+                    const ingresoReal = trans.filter(t => t.tipo === "Ingreso").reduce((sum, t) => sum + Number(t.monto), 0);
+                    const egresoReal = trans.filter(t => t.tipo === "Egreso").reduce((sum, t) => sum + Number(t.monto), 0);
+                    return {
+                        balanceEstimado: ingresoEst - egresoEst,
+                        balanceReal: ingresoReal - egresoReal
+                    };
+                })
+            );
+        }
+        // Devuelve una promesa que resuelve el config del gráfico
+        return Promise.all(promesas).then(results => {
+            results.forEach(r => {
+                balancesEstimados.push(r.balanceEstimado);
+                balancesReales.push(r.balanceReal);
+            });
+            return {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [
+                        {label: 'Balance Estimado', data: balancesEstimados, borderColor: '#58a6ff', fill: false},
+                        {label: 'Balance Real', data: balancesReales, borderColor: '#e74c3c', fill: false}
+                    ]
+                },
+                options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+            };
+        });
     },
-    ingresosComparativo: {
-        type: 'bar',
-        data: {
-            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
-            datasets: [
-                {label: 'Ingreso Estimado', data: [2000, 2100, 2200, 2300, 2400, 2500, 2600], backgroundColor: '#58a6ff'},
-                {label: 'Ingreso Real', data: [1950, 2050, 2150, 2250, 2350, 2450, 2550], backgroundColor: '#27ae60'}
-            ]
-        },
-        options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+    ingresosComparativo: function() {
+        // Gráfico de barras: muestra ingresos estimados y reales de los últimos 6 meses + actual
+        const meses = [];
+        const ingresosEstimados = [];
+        const ingresosReales = [];
+        const now = new Date();
+        const promesas = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const mesStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            meses.push(mesToString(mesStr));
+            promesas.push(
+                Promise.all([
+                    window.getPresupuestosByUserAndMonth(currentUser, mesStr),
+                    Promise.resolve(getFilteredTransacciones(mesStr))
+                ]).then(([presupuestos, trans]) => {
+                    let ingresoEst = 0;
+                    if (presupuestos && presupuestos.length > 0) {
+                        ingresoEst = Number(presupuestos[0].ingresoEsperado) || 0;
+                    }
+                    const ingresoReal = trans.filter(t => t.tipo === "Ingreso").reduce((sum, t) => sum + Number(t.monto), 0);
+                    return {
+                        ingresoEstimado: ingresoEst,
+                        ingresoReal: ingresoReal
+                    };
+                })
+            );
+        }
+        return Promise.all(promesas).then(results => {
+            results.forEach(r => {
+                ingresosEstimados.push(r.ingresoEstimado);
+                ingresosReales.push(r.ingresoReal);
+            });
+            return {
+                type: 'bar',
+                data: {
+                    labels: meses,
+                    datasets: [
+                        {label: 'Ingreso Estimado', data: ingresosEstimados, backgroundColor: '#58a6ff'},
+                        {label: 'Ingreso Real', data: ingresosReales, backgroundColor: '#27ae60'}
+                    ]
+                },
+                options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+            };
+        });
     },
-    evolucionBalance: {
-        type: 'line',
-        data: {
-            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-            datasets: [
-                {label: 'Balance', data: [1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750], borderColor: '#58a6ff', fill: true, backgroundColor: 'rgba(88,166,255,0.1)'}
-            ]
-        },
-        options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+    evolucionBalance: function() {
+        // Gráfico de línea: evolución del balance real mes a mes (últimos 12 meses)
+        const meses = [];
+        const balances = [];
+        const now = new Date();
+        const promesas = [];
+        for (let i = 11; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const mesStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            meses.push(mesToString(mesStr));
+            promesas.push(
+                Promise.resolve(getFilteredTransacciones(mesStr)).then(trans => {
+                    const ingreso = trans.filter(t => t.tipo === "Ingreso").reduce((sum, t) => sum + Number(t.monto), 0);
+                    const egreso = trans.filter(t => t.tipo === "Egreso").reduce((sum, t) => sum + Number(t.monto), 0);
+                    return ingreso - egreso;
+                })
+            );
+        }
+        return Promise.all(promesas).then(results => {
+            results.forEach(bal => balances.push(bal));
+            return {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [
+                        {label: 'Balance', data: balances, borderColor: '#58a6ff', fill: true, backgroundColor: 'rgba(88,166,255,0.1)'}
+                    ]
+                },
+                options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+            };
+        });
     },
-    distribucionGastosIngresos: {
-        type: 'bar',
-        data: {
-            labels: ['Gastos', 'Ingresos'],
-            datasets: [
-                {label: 'Distribución', data: [1200, 2500], backgroundColor: ['#e74c3c', '#27ae60']}
-            ]
-        },
-        options: {responsive: true, plugins: {legend: {display: false}}}
+    distribucionGastosIngresos: function(month) {
+        // Gráfico de barras: compara egresos reales vs ingresos reales del mes seleccionado
+        const trans = getFilteredTransacciones(month);
+        const ingreso = trans.filter(t => t.tipo === "Ingreso").reduce((sum, t) => sum + Number(t.monto), 0);
+        const egreso = trans.filter(t => t.tipo === "Egreso").reduce((sum, t) => sum + Number(t.monto), 0);
+        return {
+            type: 'bar',
+            data: {
+                labels: ['Gastos', 'Ingresos'],
+                datasets: [
+                    {label: 'Distribución', data: [egreso, ingreso], backgroundColor: ['#e74c3c', '#27ae60']}
+                ]
+            },
+            options: {responsive: true, plugins: {legend: {display: false}}}
+        };
     }
 };
 
+// Modifica renderChart para soportar promesas en los gráficos dinámicos
 function renderChart(type) {
     if (!chartCanvas) return;
     if (finanzasChart) {
         finanzasChart.destroy();
     }
-    let config;
+    let configFn = chartData[type];
     const month = monthFilter ? monthFilter.value : '';
-    if (typeof chartData[type] === 'function') {
-        config = chartData[type](month);
+    let configPromise;
+    if (typeof configFn === 'function') {
+        // Si la función devuelve una promesa, espera a que se resuelva
+        const result = configFn(type === "gastosCategoria" || type === "distribucionGastosIngresos" ? month : undefined);
+        if (result && typeof result.then === "function") {
+            configPromise = result;
+        } else {
+            configPromise = Promise.resolve(result);
+        }
     } else {
-        config = chartData[type];
+        configPromise = Promise.resolve(configFn);
     }
-    finanzasChart = new Chart(chartCanvas, config);
+    configPromise.then(config => {
+        finanzasChart = new Chart(chartCanvas, config);
+    });
 }
 
 if (chartTypeSelect && chartCanvas) {
@@ -543,62 +660,45 @@ if (presupuestoForm) {
         const egresoEsperado = parseFloat(presupuestoForm.querySelector('input[placeholder="Egreso esperado"]').value);
         if (!mes || isNaN(ingresoEsperado) || isNaN(egresoEsperado) || !currentUser) return;
         window.addPresupuesto({
-            username: currentUser, // <--- corregido
+            username: currentUser,
             mes,
             ingresoEsperado,
             egresoEsperado
         }).then(() => {
-            loadPresupuestos();
-            updateDashboardSummary();
+            refreshBudgetsTablesAndDashboard();
             presupuestoForm.reset();
         });
     };
 }
 
-// Mostrar presupuestos en la tabla
-function loadPresupuestos() {
-    const mes = document.querySelector('#budgets input[type="month"]')?.value || '';
-    if (!currentUser || !mes) return;
-    window.getPresupuestosByUserAndMonth(currentUser, mes).then(presupuestos => { // <--- corregido
-        const tbody = document.querySelector('#budgets table tbody');
-        tbody.innerHTML = '';
+// Mostrar tabla de presupuestos por mes en la configuración de presupuestos
+function loadPresupuestosMesConfigTable() {
+    if (!currentUser) return;
+    window.getAllPresupuestosByUser(currentUser).then(presupuestos => {
+        presupuestos.sort((a, b) => (a.mes < b.mes ? 1 : -1));
+        const tbody = document.querySelector("#presupuestosMesConfigTable tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
         if (!presupuestos.length) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">Sin presupuestos para este mes</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#888;">Sin presupuestos registrados</td></tr>`;
             return;
         }
         presupuestos.forEach(p => {
-            const tr = document.createElement('tr');
+            const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${mesToString(p.mes)}</td>
-                <td>
-                    <input type="number" value="${p.ingresoEsperado || 0}" style="width:80px;" class="edit-ingreso" />
-                </td>
-                <td>
-                    <input type="number" value="${p.egresoEsperado || 0}" style="width:80px;" class="edit-egreso" />
-                </td>
-                <td>
-                    <button class="save-presupuesto" data-id="${p.id}">Guardar</button>
-                </td>
+                <td>$${p.ingresoEsperado || 0}</td>
+                <td>$${p.egresoEsperado || 0}</td>
             `;
             tbody.appendChild(tr);
-
-            tr.querySelector('.save-presupuesto').onclick = function() {
-                const nuevoIngreso = parseFloat(tr.querySelector('.edit-ingreso').value);
-                const nuevoEgreso = parseFloat(tr.querySelector('.edit-egreso').value);
-                // Asegúrate de pasar el id si existe
-                const presupuestoActualizado = {
-                    ...p,
-                    ingresoEsperado: nuevoIngreso,
-                    egresoEsperado: nuevoEgreso
-                };
-                if (p.id) presupuestoActualizado.id = p.id;
-                window.addPresupuesto(presupuestoActualizado).then(() => {
-                    loadPresupuestos();
-                    updateDashboardSummary();
-                });
-            };
         });
     });
+}
+
+// Refresca la tabla y el dashboard después de guardar o editar presupuesto
+function refreshBudgetsTablesAndDashboard() {
+    loadPresupuestosMesConfigTable();
+    updateDashboardSummary();
 }
 
 // Utilidad para mostrar el mes en texto
@@ -614,7 +714,7 @@ if (presupuestoMesInput) {
     presupuestoMesInput.addEventListener('change', loadPresupuestos);
 }
 
-// Actualizar dashboard con los datos del presupuesto REAL del mes seleccionado
+// Actualizar dashboard con los datos del presupuesto y los montos reales del mes seleccionado
 function updateDashboardSummary() {
     const monthInput = document.getElementById('monthFilter');
     let mes = '';
@@ -625,24 +725,22 @@ function updateDashboardSummary() {
         mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
     if (!currentUser) return;
-    // Obtener el presupuesto real del mes seleccionado
-    window.getPresupuestosByUserAndMonth(currentUser, mes).then(presupuestos => {
-        let ingreso = 0;
-        let egreso = 0;
-        presupuestos.forEach(p => {
-            ingreso += Number(p.ingresoEsperado) || 0;
-            egreso += Number(p.egresoEsperado) || 0;
-        });
-        // El balance es ingreso - egreso (presupuestado)
-        const balance = ingreso - egreso;
-        const summaryItems = document.querySelectorAll('.summary-item span');
-        if (summaryItems.length >= 3) {
-            summaryItems[0].textContent = `$${ingreso}`;
-            summaryItems[1].textContent = `$${egreso}`;
-            summaryItems[2].textContent = `$${balance}`;
-        }
-    });
-}
+
+    // Obtiene los montos reales de transacciones del mes
+    const trans = getFilteredTransacciones(mes);
+    const ingresoReal = trans.filter(t => t.tipo === "Ingreso").reduce((sum, t) => sum + Number(t.monto), 0);
+    const egresoReal = trans.filter(t => t.tipo === "Egreso").reduce((sum, t) => sum + Number(t.monto), 0);
+    const balanceReal = ingresoReal - egresoReal;
+
+    // Muestra los montos reales en el dashboard
+    const ingresosEl = document.getElementById('dashboardIngresos');
+    const gastosEl = document.getElementById('dashboardGastos');
+    const balanceEl = document.getElementById('dashboardBalance');
+    if (ingresosEl) ingresosEl.textContent = `$${ingresoReal}`;
+    if (gastosEl) gastosEl.textContent = `$${egresoReal}`;
+    if (balanceEl) balanceEl.textContent = `$${balanceReal}`;
+};
+
 
 // Actualizar dashboard al cambiar el mes
 const monthInput = document.getElementById('monthFilter');
@@ -651,7 +749,10 @@ if (monthInput) {
 }
 
 // Llama a updateDashboardSummary al cargar la página
-document.addEventListener('DOMContentLoaded', updateDashboardSummary);
+document.addEventListener('DOMContentLoaded', function() {
+    updateDashboardSummary();
+    loadPresupuestosMesConfigTable();
+});
 
 // --- Mensaje global estilo Bellance ---
 function showGlobalMsg(msg, timeout = 3500) {
@@ -701,3 +802,4 @@ if (deleteCatConfirm) {
         }
     };
 }
+
