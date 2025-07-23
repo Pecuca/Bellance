@@ -106,7 +106,8 @@
             <label>Fecha</label>
             <input type="date" required class="chart-select"/>
             <label>Categoría</label>
-            <input type="text" required placeholder="Categoría" class="chart-select"/>
+            <select id="transCategoriaSelect" required class="chart-select"></select>
+            <!-- <input type="text" required placeholder="Categoría" class="chart-select"/> -->
             <label>Descripción</label>
             <input type="text" placeholder="Descripción" class="chart-select"/>
             <button type="submit" class="btn">Registrar</button>
@@ -208,6 +209,21 @@
     <button id="deleteAccountBtn" style="background:#e74c3c;color:#fff;border:none;border-radius:8px;padding:8px 18px;cursor:pointer;">Eliminar cuenta</button>
     <p id="settingsMsg" style="color:#e74c3c; margin-top:12px; display:none;"></p>
   </div>
+</div>
+
+<!-- Modal de confirmación para eliminar categoría -->
+<div id="deleteCatModal" class="global-msg" style="display:none; flex-direction:column; align-items:center; max-width:340px;">
+  <span id="deleteCatMsg" style="margin-bottom:16px;">¿Seguro que deseas eliminar esta categoría?</span>
+  <div style="display:flex; gap:16px;">
+    <button id="deleteCatConfirm" class="btn" style="background:#ea4661;">Eliminar</button>
+    <button id="deleteCatCancel" class="btn" style="background:#39a19e;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Contenedor de mensajes globales -->
+<div id="globalMsg" class="global-msg" style="display:none;">
+  <span id="globalMsgText"></span>
+  <button id="globalMsgClose" class="global-msg-close" aria-label="Cerrar">&times;</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

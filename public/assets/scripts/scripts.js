@@ -15,58 +15,58 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-                const user = document.getElementById('loginUser').value.trim();
-                const pass = document.getElementById('loginPass').value;
-                if (!user || !pass) {
-                    loginMsg.textContent = 'Debes ingresar usuario y contraseña.';
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            if (!user || !pass) {
+                loginMsg.textContent = 'Debes ingresar usuario y contraseña.';
+                loginMsg.style.display = 'block';
+                return;
+            }
+            // Validar usuario en IndexedDB
+            window.getUsuario(user).then(u => {
+                if (!u) {
+                    loginMsg.textContent = 'El usuario no existe.';
                     loginMsg.style.display = 'block';
-                    return;
+                } else if (u.password !== pass) {
+                    loginMsg.textContent = 'La contraseña no es válida.';
+                    loginMsg.style.display = 'block';
+                } else {
+                    loginMsg.style.display = 'none';
+                    setTimeout(() => {
+                        if (loginView) {
+                            loginView.style.display = 'none';
+                            loginView.style.zIndex = '0';
+                        }
+                        if (mainLayout) {
+                            mainLayout.style.display = '';
+                            mainLayout.style.zIndex = '1';
+                        }
+                        // Cambiar nombre en el layout
+                        const sidebarUserName = document.getElementById('sidebarUserName');
+                        if (sidebarUserName) sidebarUserName.textContent = user;
+
+                        // Actualizar avatar con las 2 primeras letras
+                        const userAvatar = document.querySelector('.user-avatar');
+                        if (userAvatar) {
+                            userAvatar.textContent = user.slice(0, 2).toUpperCase();
+                        }
+                    }, 100);
+
+                    // Nuevo: Cargar transacciones del usuario
+                    currentUser = user;
+                    window.getTransaccionesByUser(user).then(trs => {
+                        transacciones = trs;
+                        renderChart(chartTypeSelect.value); // Actualiza los gráficos con los datos reales
+                        renderTransTable(); // Renderiza la tabla de transacciones
+                    });
+
+                    // Nuevo: Cargar categorías del usuario
+                    setTimeout(() => {
+                        loadCategorias();
+                    }, 100);
                 }
-                // Validar usuario en IndexedDB
-                window.getUsuario(user).then(u => {
-                    if (!u) {
-                        loginMsg.textContent = 'El usuario no existe.';
-                        loginMsg.style.display = 'block';
-                    } else if (u.password !== pass) {
-                        loginMsg.textContent = 'La contraseña no es válida.';
-                        loginMsg.style.display = 'block';
-                    } else {
-                        loginMsg.style.display = 'none';
-                        setTimeout(() => {
-                            if (loginView) {
-                                loginView.style.display = 'none';
-                                loginView.style.zIndex = '0';
-                            }
-                            if (mainLayout) {
-                                mainLayout.style.display = '';
-                                mainLayout.style.zIndex = '1';
-                            }
-                            // Cambiar nombre en el layout
-                            const sidebarUserName = document.getElementById('sidebarUserName');
-                            if (sidebarUserName) sidebarUserName.textContent = user;
-
-                            // Actualizar avatar con las 2 primeras letras
-                            const userAvatar = document.querySelector('.user-avatar');
-                            if (userAvatar) {
-                                userAvatar.textContent = user.slice(0, 2).toUpperCase();
-                            }
-                        }, 100);
-
-                        // Nuevo: Cargar transacciones del usuario
-                        currentUser = user;
-                        window.getTransaccionesByUser(user).then(trs => {
-                            transacciones = trs;
-                            renderChart(chartTypeSelect.value); // Actualiza los gráficos con los datos reales
-                            renderTransTable(); // Renderiza la tabla de transacciones
-                        });
-
-                        // Nuevo: Cargar categorías del usuario
-                        setTimeout(() => {
-                            loadCategorias();
-                        }, 100);
-                    }
-                });
             });
+        });
     }
 
     // Registro
@@ -298,7 +298,8 @@ if (chartTypeSelect && chartCanvas) {
             const tipo = transForm.querySelector('select').value;
             const monto = Number(transForm.querySelector('input[type="number"]').value);
             const fecha = transForm.querySelector('input[type="date"]').value;
-            const categoria = transForm.querySelector('input[placeholder="Categoría"]').value;
+            // Cambia aquí: usa el valor del select de categorías
+            const categoria = document.getElementById('transCategoriaSelect')?.value || '';
             const descripcion = transForm.querySelector('input[placeholder="Descripción"]').value;
             if (fecha && categoria && monto && currentUser) {
                 const nuevaTrans = {fecha, tipo, categoria, monto, descripcion, username: currentUser};
@@ -307,7 +308,7 @@ if (chartTypeSelect && chartCanvas) {
                         transacciones = trs;
                         renderChart(chartTypeSelect.value);
                         renderTransTable();
-                        updateDashboardSummary(); // <-- Agrega esta línea
+                        updateDashboardSummary();
                     });
                 });
             }
@@ -346,43 +347,67 @@ function renderCategorias() {
     ul.innerHTML = '';
     if (!categorias.length) {
         ul.innerHTML = '<li style="color:#888;">Sin categorías</li>';
-        return;
-    }
-    categorias.forEach(cat => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <span class="cat-name">${cat.nombre}</span>
-            <button data-id="${cat.id}" class="edit-cat-btn">Editar</button>
-            <button data-id="${cat.id}" class="delete-cat-btn">Eliminar</button>
-        `;
-        ul.appendChild(li);
+    } else {
+        categorias.forEach(cat => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span class="cat-name">${cat.nombre}</span>
+                <button data-id="${cat.id}" class="edit-cat-btn">Editar</button>
+                <button data-id="${cat.id}" class="delete-cat-btn">Eliminar</button>
+            `;
+            ul.appendChild(li);
 
-        // Botón editar
-        li.querySelector('.edit-cat-btn').onclick = function() {
-            const span = li.querySelector('.cat-name');
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = cat.nombre;
-            input.style.marginRight = '8px';
-            span.replaceWith(input);
+            // Botón editar
+            li.querySelector('.edit-cat-btn').onclick = function() {
+                const span = li.querySelector('.cat-name');
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = cat.nombre;
+                input.style.marginRight = '8px';
+                span.replaceWith(input);
 
-            this.style.display = 'none'; // Oculta el botón editar
+                this.style.display = 'none'; // Oculta el botón editar
 
-            // Botón guardar
-            const saveBtn = document.createElement('button');
-            saveBtn.textContent = 'Guardar';
-            saveBtn.className = 'save-cat-btn';
-            li.insertBefore(saveBtn, li.querySelector('.delete-cat-btn'));
+                // Botón guardar
+                const saveBtn = document.createElement('button');
+                saveBtn.textContent = 'Guardar';
+                saveBtn.className = 'save-cat-btn';
+                li.insertBefore(saveBtn, li.querySelector('.delete-cat-btn'));
 
-            saveBtn.onclick = function() {
-                const newName = input.value.trim();
-                if (!newName) return;
-                window.updateCategoria({...cat, nombre: newName}).then(() => {
-                    loadCategorias();
-                });
+                saveBtn.onclick = function() {
+                    const newName = input.value.trim();
+                    if (!newName) return;
+                    window.updateCategoria({...cat, nombre: newName}).then(() => {
+                        loadCategorias();
+                    });
+                };
             };
-        };
-    });
+
+            // Botón eliminar (abre el modal)
+            li.querySelector('.delete-cat-btn').onclick = function() {
+                openDeleteCatModal(cat.id, cat.nombre);
+            };
+        });
+    }
+
+    // Llenar el selector de categorías en el formulario de transacciones
+    const catSelect = document.getElementById('transCategoriaSelect');
+    if (catSelect) {
+        catSelect.innerHTML = '';
+        if (!categorias.length) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'Sin categorías';
+            catSelect.appendChild(opt);
+        } else {
+            categorias.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat.nombre;
+                opt.textContent = cat.nombre;
+                catSelect.appendChild(opt);
+            });
+        }
+    }
 }
 
 // Cargar categorías del usuario actual
@@ -518,7 +543,7 @@ if (presupuestoForm) {
         const egresoEsperado = parseFloat(presupuestoForm.querySelector('input[placeholder="Egreso esperado"]').value);
         if (!mes || isNaN(ingresoEsperado) || isNaN(egresoEsperado) || !currentUser) return;
         window.addPresupuesto({
-            username: currentUser.username,
+            username: currentUser, // <--- corregido
             mes,
             ingresoEsperado,
             egresoEsperado
@@ -534,7 +559,7 @@ if (presupuestoForm) {
 function loadPresupuestos() {
     const mes = document.querySelector('#budgets input[type="month"]')?.value || '';
     if (!currentUser || !mes) return;
-    window.getPresupuestosByUserAndMonth(currentUser.username, mes).then(presupuestos => {
+    window.getPresupuestosByUserAndMonth(currentUser, mes).then(presupuestos => { // <--- corregido
         const tbody = document.querySelector('#budgets table tbody');
         tbody.innerHTML = '';
         if (!presupuestos.length) {
@@ -600,7 +625,7 @@ function updateDashboardSummary() {
         mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
     if (!currentUser) return;
-    window.getPresupuestosByUserAndMonth(currentUser.username, mes).then(presupuestos => {
+    window.getPresupuestosByUserAndMonth(currentUser, mes).then(presupuestos => { // <--- corregido
         let ingreso = 0;
         let egreso = 0;
         presupuestos.forEach(p => {
@@ -626,11 +651,51 @@ if (monthInput) {
 // Llama a updateDashboardSummary al cargar la página
 document.addEventListener('DOMContentLoaded', updateDashboardSummary);
 
-// indexeddb.js
-request.onupgradeneeded = function(event) {
-    db = event.target.result;
-    if (!db.objectStoreNames.contains("presupuestos")) {
-        db.createObjectStore("presupuestos", { keyPath: "id", autoIncrement: true });
+// --- Mensaje global estilo Bellance ---
+function showGlobalMsg(msg, timeout = 3500) {
+    const cont = document.getElementById('globalMsg');
+    const txt = document.getElementById('globalMsgText');
+    if (!cont || !txt) return;
+    txt.textContent = msg;
+    cont.style.display = 'flex';
+    if (timeout > 0) {
+        if (cont._timeout) clearTimeout(cont._timeout);
+        cont._timeout = setTimeout(() => { cont.style.display = 'none'; }, timeout);
     }
-    // ...
-};
+}
+function hideGlobalMsg() {
+    const cont = document.getElementById('globalMsg');
+    if (cont) cont.style.display = 'none';
+}
+const globalMsgClose = document.getElementById('globalMsgClose');
+if (globalMsgClose) {
+    globalMsgClose.onclick = hideGlobalMsg;
+}
+
+// --- Modal de confirmación para eliminar categoría ---
+let catToDeleteId = null;
+const deleteCatModal = document.getElementById('deleteCatModal');
+const deleteCatConfirm = document.getElementById('deleteCatConfirm');
+const deleteCatCancel = document.getElementById('deleteCatCancel');
+
+function openDeleteCatModal(catId, catName) {
+    catToDeleteId = catId;
+    const msg = document.getElementById('deleteCatMsg');
+    if (msg) msg.textContent = `¿Seguro que deseas eliminar la categoría "${catName}"?`;
+    if (deleteCatModal) deleteCatModal.style.display = 'flex';
+}
+function closeDeleteCatModal() {
+    catToDeleteId = null;
+    if (deleteCatModal) deleteCatModal.style.display = 'none';
+}
+if (deleteCatCancel) deleteCatCancel.onclick = closeDeleteCatModal;
+if (deleteCatConfirm) {
+    deleteCatConfirm.onclick = function() {
+        if (catToDeleteId !== null) {
+            window.deleteCategoria(catToDeleteId).then(() => {
+                loadCategorias();
+                closeDeleteCatModal();
+            });
+        }
+    };
+}

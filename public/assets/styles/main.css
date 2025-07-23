@@ -383,6 +383,40 @@ li button:hover {
     background: #30363d;
     color: #fff;
 }
+li button.edit-cat-btn {
+    background: #58a6ff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 16px;
+    margin-left: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px #2f86c0;
+}
+li button.edit-cat-btn:hover {
+    background: #1b987f;
+    color: #fff;
+}
+
+li button.delete-cat-btn {
+    background: #ea4661;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 16px;
+    margin-left: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px #a02838;
+}
+li button.delete-cat-btn:hover {
+    background: #ff7675;
+    color: #fff;
+}
+
 .summary-box {
     background: #ebe6c8;
     border-radius: 10px;
@@ -533,6 +567,64 @@ footer {
   border: none;
   border-top: 1px solid #5c4434;
   margin-bottom: px;
+}
+
+.global-msg {
+    position: fixed;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f8f6e8;
+    color: #5c4434;
+    border: 2px solid #39a19e;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(20,23,28,0.15);
+    padding: 16px 32px 16px 20px;
+    font-size: 1.1rem;
+    z-index: 10010;
+    display: flex;
+    align-items: center;
+    min-width: 220px;
+    max-width: 90vw;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+    animation: fadeInMsg 0.3s;
+}
+@keyframes fadeInMsg {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px);}
+    to   { opacity: 1; transform: translateX(-50%) translateY(0);}
+}
+.global-msg-close {
+    background: none;
+    border: none;
+    color: #ea4661;
+    font-size: 1.5rem;
+    margin-left: 18px;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0 4px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+.global-msg-close:hover {
+    background: #ffe5e5;
+}
+
+#deleteCatModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 11000;
+    background: #f8f6e8;
+    border: 2px solid #ea4661;
+    box-shadow: 0 8px 32px rgba(20,23,28,0.25);
+    padding: 28px 24px 20px 24px;
+    border-radius: 16px;
+    min-width: 220px;
+    max-width: 90vw;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+    display: none;
 }
 
 @media (max-width: 900px) {
