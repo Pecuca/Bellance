@@ -15,72 +15,77 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value;
-            if (!user || !pass) {
-                loginMsg.textContent = 'Debes ingresar usuario y contraseña.';
-                loginMsg.style.display = 'block';
-                return;
-            }
-            // Validar usuario en IndexedDB
-            window.getUsuario(user).then(u => {
-                if (!u) {
-                    loginMsg.textContent = 'El usuario no existe.';
+                const user = document.getElementById('loginUser').value.trim();
+                const pass = document.getElementById('loginPass').value;
+                if (!user || !pass) {
+                    loginMsg.textContent = 'Debes ingresar usuario y contraseña.';
                     loginMsg.style.display = 'block';
-                } else if (u.password !== pass) {
-                    loginMsg.textContent = 'La contraseña no es válida.';
-                    loginMsg.style.display = 'block';
-                } else {
-                    loginMsg.style.display = 'none';
-                    setTimeout(() => {
-                        if (loginView) {
-                            loginView.style.display = 'none';
-                            loginView.style.zIndex = '0';
-                        }
-                        if (mainLayout) {
-                            mainLayout.style.display = '';
-                            mainLayout.style.zIndex = '1';
-                        }
-                        // Cambiar nombre en el layout
-                        const sidebarUserName = document.getElementById('sidebarUserName');
-                        if (sidebarUserName) sidebarUserName.textContent = user;
-
-                        // Actualizar avatar con las 2 primeras letras
-                        const userAvatar = document.querySelector('.user-avatar');
-                        if (userAvatar) {
-                            userAvatar.textContent = user.slice(0, 2).toUpperCase();
-                        }
-                    }, 100);
-
-                    // Nuevo: Cargar transacciones del usuario
-                    currentUser = user;
-                    window.getTransaccionesByUser(user).then(trs => {
-                        transacciones = trs;
-                        renderChart(chartTypeSelect.value); // Actualiza los gráficos con los datos reales
-                        renderTransTable(); // Renderiza la tabla de transacciones
-                    });
+                    return;
                 }
+                // Validar usuario en IndexedDB
+                window.getUsuario(user).then(u => {
+                    if (!u) {
+                        loginMsg.textContent = 'El usuario no existe.';
+                        loginMsg.style.display = 'block';
+                    } else if (u.password !== pass) {
+                        loginMsg.textContent = 'La contraseña no es válida.';
+                        loginMsg.style.display = 'block';
+                    } else {
+                        loginMsg.style.display = 'none';
+                        setTimeout(() => {
+                            if (loginView) {
+                                loginView.style.display = 'none';
+                                loginView.style.zIndex = '0';
+                            }
+                            if (mainLayout) {
+                                mainLayout.style.display = '';
+                                mainLayout.style.zIndex = '1';
+                            }
+                            // Cambiar nombre en el layout
+                            const sidebarUserName = document.getElementById('sidebarUserName');
+                            if (sidebarUserName) sidebarUserName.textContent = user;
+
+                            // Actualizar avatar con las 2 primeras letras
+                            const userAvatar = document.querySelector('.user-avatar');
+                            if (userAvatar) {
+                                userAvatar.textContent = user.slice(0, 2).toUpperCase();
+                            }
+                        }, 100);
+
+                        // Nuevo: Cargar transacciones del usuario
+                        currentUser = user;
+                        window.getTransaccionesByUser(user).then(trs => {
+                            transacciones = trs;
+                            renderChart(chartTypeSelect.value); // Actualiza los gráficos con los datos reales
+                            renderTransTable(); // Renderiza la tabla de transacciones
+                        });
+
+                        // Nuevo: Cargar categorías del usuario
+                        setTimeout(() => {
+                            loadCategorias();
+                        }, 100);
+                    }
+                });
             });
-        });
     }
 
     // Registro
     if (registerForm) {
         registerForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const user = document.getElementById('regUser').value.trim();
-            const pass = document.getElementById('regPass').value;
-            if (!user || !pass) return;
-            window.getUsuario(user).then(u => {
-                if (u) {
-                    regMsg.textContent = 'El usuario ya existe.';
-                    regMsg.style.display = 'block';
-                } else {
-                    window.addUsuario({username: user, password: pass}).then(() => {
-                        regMsg.textContent = 'Usuario registrado. Ahora puedes iniciar sesión.';
+                const user = document.getElementById('regUser').value.trim();
+                const pass = document.getElementById('regPass').value;
+                if (!user || !pass) return;
+                window.getUsuario(user).then(u => {
+                    if (u) {
+                        regMsg.textContent = 'El usuario ya existe.';
                         regMsg.style.display = 'block';
-                    });
-                }
+                    } else {
+                        window.addUsuario({username: user, password: pass}).then(() => {
+                                regMsg.textContent = 'Usuario registrado. Ahora puedes iniciar sesión.';
+                                regMsg.style.display = 'block';
+                        });
+                    }
             });
         });
     }
@@ -154,6 +159,7 @@ let finanzasChart = null;
 // Datos de ejemplo para transacciones (en producción, esto vendría de una base de datos)
 let transacciones = [];
 let currentUser = null;
+let categorias = [];
 
 function getMonthString(date) {
     // date: '2025-07-01' => '2025-07'
@@ -321,6 +327,58 @@ function renderTransTable() {
         `;
         tbody.appendChild(tr);
     });
+}
+
+// Renderizar lista de categorías
+function renderCategorias() {
+    const ul = document.querySelector('#categories ul');
+    if (!ul) return;
+    ul.innerHTML = '';
+    if (!categorias.length) {
+        ul.innerHTML = '<li style="color:#888;">Sin categorías</li>';
+        return;
+    }
+    categorias.forEach(cat => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${cat.nombre}
+            <button data-id="${cat.id}" class="edit-cat-btn">Editar</button>
+            <button data-id="${cat.id}" class="delete-cat-btn">Eliminar</button>
+        `;
+        ul.appendChild(li);
+    });
+    // Botones eliminar
+    ul.querySelectorAll('.delete-cat-btn').forEach(btn => {
+        btn.onclick = function() {
+            const id = Number(this.dataset.id);
+            window.deleteCategoria(id).then(() => {
+                loadCategorias();
+            });
+        };
+    });
+}
+
+// Cargar categorías del usuario actual
+function loadCategorias() {
+    if (!currentUser) return;
+    window.getCategoriasByUser(currentUser).then(cats => {
+        categorias = cats;
+        renderCategorias();
+    });
+}
+
+// Crear nueva categoría
+const catForm = document.getElementById('catForm');
+if (catForm) {
+    catForm.onsubmit = function(e) {
+        e.preventDefault();
+        const nombre = catForm.querySelector('input[type="text"]').value.trim();
+        if (!nombre || !currentUser) return;
+        window.addCategoria({nombre, username: currentUser}).then(() => {
+            catForm.reset();
+            loadCategorias();
+        });
+    };
 }
 
 // --- LOGOUT ---

@@ -20,7 +20,7 @@
       <p id="loginMsg" class="login-msg"></p>
       <hr class="login-hr">
       <h3 class="register-title">¿No tienes cuenta?</h3>
-      <form id="registerForm">
+      <form id="registerForm" class="register-form">
         <input type="text" id="regUser" class="login-input" placeholder="Usuario" required /><br>
         <input type="password" id="regPass" class="login-input" placeholder="Contraseña" required /><br>
         <button type="submit" class="register-btn">Registrarse</button>
@@ -102,7 +102,7 @@
             <label>Tipo</label>
             <select required>
                 <option value="Ingreso">Ingreso</option>
-                <option value="Gasto">Gasto</option>
+                <option value="Egreso">Egreso</option>
             </select>
             <label>Monto</label>
             <input type="number" required min="1" placeholder="Monto" />
@@ -130,24 +130,12 @@
         </table>
       </section>
       <section id="categories" class="view-section" style="display:none;">
-        <h2>Gestión de Categorías</h2>
-        <ul>
-          <li>Alimentación <button>Editar</button> <button>Eliminar</button></li>
-          <li>Transporte <button>Editar</button> <button>Eliminar</button></li>
-          <li>Ocio <button>Editar</button> <button>Eliminar</button></li>
-          <li>Servicios <button>Editar</button> <button>Eliminar</button></li>
-          <li>Salud <button>Editar</button> <button>Eliminar</button></li>
-          <li>Educación <button>Editar</button> <button>Eliminar</button></li>
-          <li>Otros <button>Editar</button> <button>Eliminar</button></li>
-        </ul>
-        <div class="form-demo">
-          <h2>Crear/Editar Categoría</h2>
-          <form>
-            <label>Nombre de la categoría</label>
-            <input type="text" placeholder="Ej: Mascotas" />
-            <button type="submit">Guardar</button>
-          </form>
-        </div>
+        <h2>Categorías</h2>
+        <form id="catForm" style="margin-bottom:18px;">
+            <input type="text" required placeholder="Nombre de la categoría" />
+            <button type="submit">Agregar</button>
+        </form>
+        <ul></ul>
       </section>
       <section id="budgets" class="view-section" style="display:none;">
         <h2>Configuración de Presupuestos</h2>
@@ -210,8 +198,6 @@
 <!-- Botón flotante de ayuda -->
 <button id="helpBtn" class="floating-help">?</button>
 
-<!-- Botón de ajustes -->
-<button id="settingsBtn" class="settings-btn" style="position:fixed; bottom:32px; right:32px; z-index:100;">⚙️ Ajustes</button>
 <!-- Modal de ajustes -->
 <div id="settingsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(24,26,27,0.85); z-index:9999; justify-content:center; align-items:center;">
   <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:left; position:relative; min-width:320px;">

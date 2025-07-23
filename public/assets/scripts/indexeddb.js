@@ -17,6 +17,12 @@ request.onupgradeneeded = function(event) {
         transStore.createIndex("username", "username", { unique: false }); // Relacionar con usuario
         transStore.createIndex("fecha", "fecha", { unique: false });
     }
+    // Crear almacén de categorías si no existe
+    if (!db.objectStoreNames.contains("categorias")) {
+        const catStore = db.createObjectStore("categorias", { keyPath: "id", autoIncrement: true });
+        catStore.createIndex("username", "username", { unique: false });
+        catStore.createIndex("nombre", "nombre", { unique: false });
+    }
 };
 
 request.onsuccess = function(event) {
@@ -69,6 +75,51 @@ window.getTransaccionesByUser = function(username) {
         const index = store.index("username");
         const req = index.getAll(username);
         req.onsuccess = () => resolve(req.result);
+        req.onerror = (e) => reject(e);
+    });
+};
+
+// Agregar categoría
+window.addCategoria = function(categoria) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("categorias", "readwrite");
+        const store = tx.objectStore("categorias");
+        const req = store.add(categoria);
+        req.onsuccess = () => resolve();
+        req.onerror = (e) => reject(e);
+    });
+};
+
+// Obtener categorías de un usuario
+window.getCategoriasByUser = function(username) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("categorias", "readonly");
+        const store = tx.objectStore("categorias");
+        const index = store.index("username");
+        const req = index.getAll(username);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = (e) => reject(e);
+    });
+};
+
+// Eliminar categoría
+window.deleteCategoria = function(id) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("categorias", "readwrite");
+        const store = tx.objectStore("categorias");
+        const req = store.delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = (e) => reject(e);
+    });
+};
+
+// Actualizar categoría
+window.updateCategoria = function(categoria) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("categorias", "readwrite");
+        const store = tx.objectStore("categorias");
+        const req = store.put(categoria);
+        req.onsuccess = () => resolve();
         req.onerror = (e) => reject(e);
     });
 };
