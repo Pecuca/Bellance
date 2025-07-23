@@ -22,27 +22,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginMsg.style.display = 'block';
                 return;
             }
-            // Permitir cualquier usuario y contraseña
-            loginMsg.style.display = 'none';
-            setTimeout(() => {
-                if (loginView) {
-                    loginView.style.display = 'none';
-                    loginView.style.zIndex = '0';
-                }
-                if (mainLayout) {
-                    mainLayout.style.display = '';
-                    mainLayout.style.zIndex = '1';
-                }
-                // Cambiar nombre en el layout
-                const sidebarUserName = document.getElementById('sidebarUserName');
-                if (sidebarUserName) sidebarUserName.textContent = user;
+            // Validar usuario en IndexedDB
+            window.getUsuario(user).then(u => {
+                if (!u) {
+                    loginMsg.textContent = 'El usuario no existe.';
+                    loginMsg.style.display = 'block';
+                } else if (u.password !== pass) {
+                    loginMsg.textContent = 'La contraseña no es válida.';
+                    loginMsg.style.display = 'block';
+                } else {
+                    loginMsg.style.display = 'none';
+                    setTimeout(() => {
+                        if (loginView) {
+                            loginView.style.display = 'none';
+                            loginView.style.zIndex = '0';
+                        }
+                        if (mainLayout) {
+                            mainLayout.style.display = '';
+                            mainLayout.style.zIndex = '1';
+                        }
+                        // Cambiar nombre en el layout
+                        const sidebarUserName = document.getElementById('sidebarUserName');
+                        if (sidebarUserName) sidebarUserName.textContent = user;
 
-                // Actualizar avatar con las 2 primeras letras
-                const userAvatar = document.querySelector('.user-avatar');
-                if (userAvatar) {
-                    userAvatar.textContent = user.slice(0, 2).toUpperCase();
+                        // Actualizar avatar con las 2 primeras letras
+                        const userAvatar = document.querySelector('.user-avatar');
+                        if (userAvatar) {
+                            userAvatar.textContent = user.slice(0, 2).toUpperCase();
+                        }
+                    }, 100);
                 }
-            }, 100);
+            });
         });
     }
 
