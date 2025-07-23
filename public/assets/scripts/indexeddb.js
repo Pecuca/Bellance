@@ -49,3 +49,26 @@ window.getUsuario = function(username) {
         req.onerror = (e) => reject(e);
     });
 };
+
+// Agregar transacción
+window.addTransaccion = function(transaccion) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("transacciones", "readwrite");
+        const store = tx.objectStore("transacciones");
+        const req = store.add(transaccion);
+        req.onsuccess = () => resolve();
+        req.onerror = (e) => reject(e);
+    });
+};
+
+// Obtener transacciones de un usuario
+window.getTransaccionesByUser = function(username) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("transacciones", "readonly");
+        const store = tx.objectStore("transacciones");
+        const index = store.index("username");
+        const req = index.getAll(username);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = (e) => reject(e);
+    });
+};

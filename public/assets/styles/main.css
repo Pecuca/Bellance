@@ -9,7 +9,6 @@
     background: #39a19e;
     color: #fff;
     font-size: 2rem;
-    font-weight: bold;
     border: none;
     box-shadow: 0 2px 8px rgba(20,23,28,0.18);
     cursor: pointer;
@@ -46,19 +45,17 @@
 .user-avatar {
     width: 32px;
     height: 32px;
-    background: #30363d;
-    color: #58a6ff;
+    background: #fdf7e2;
+    color: #574c42;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
     font-size: 1rem;
 }
 .user-name {
     font-size: 1rem;
-    color: #e1e4e8;
-    font-weight: 500;
+    color: #574c42;
 }
 .sidebar-quick {
     margin: 32px 0 0 0;
@@ -66,46 +63,32 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-}
-.sidebar-balance {
-    background: #22272e;
-    border-radius: 8px;
-    padding: 10px 18px;
-    text-align: center;
-    margin-bottom: 6px;
-    border: 1px solid #30363d;
-}
-.sidebar-balance-label {
-    color: #8b949e;
-    font-size: 0.95rem;
-    display: block;
-}
-.sidebar-balance-value {
-    color: #8bf9df;
-    font-size: 1.2rem;
-    font-weight: bold;
-    display: block;
-}
+}  
 .sidebar-btn {
-    background: #21262d;
+    background: #075665;
     color: #e1e4e8;
-    border: 1px solid #30363d;
     border-radius: 8px;
-    padding: 8px 22px;
     font-size: 1rem;
-    font-weight: 600;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     margin-bottom: 2px;
+    border-color: #075665;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 23px;
+    box-shadow: 0px 4px #053d47;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 .sidebar-btn:hover {
     background: #30363d;
     color: #58a6ff;
 }
 .sidebar-btn.logout {
-    background: #2d333b;
-    color: #ff7675;
-    border: 1px solid #ff7675;
+    background: #ea4661;
+    color: #e1e4e8;
+    box-shadow: 0px 4px #a02838;
+    border-radius: 23px;
+    padding: 10px 25px;
 }
 .sidebar-btn.logout:hover {
     background: #ff7675;
@@ -130,11 +113,11 @@
 .sidebar-header {
     padding: 12px 0 18px 0;
     text-align: center;
-    border-bottom: 1px solid #22272e;
+    border-bottom: 1px solid #39a19e;
 }
 .sidebar-header h1 {
-    color: #ffffff;
-    font-size: 2rem;
+    color: #f7f8e6;
+    font-size: 1.5rem;
     margin: 0;
     font-weight: 700;
 }
@@ -146,11 +129,10 @@
     align-items: stretch;
 }
 .sidebar-nav a {
-    color: #e1e4e8;
+    color: #f7f8e6;
     text-decoration: none;
     padding: 12px 32px;
     border-radius: 0 20px 20px 0;
-    font-weight: 600;
     transition: background 0.2s, color 0.2s;
     background: none;
     border-left: 4px solid transparent;
@@ -160,12 +142,13 @@
     background: #1b987f;
     color: #fccd2c;
     border-left: 4px solid #fccd2c;
+    font-size: 1rem;
 }
 
 .sidebar-nav a:hover {
     background: #1b987f;
-    color: #f6f7e3;
-    border-left: 4px solid #f6f7e3;
+    color: #f7f8e6;
+    border-left: 4px solid #f7f8e6;
 }
 @media (max-width: 900px) {
     .layout {
@@ -195,19 +178,22 @@
         border-left: none;
         border-bottom: 4px solid transparent;
     }
-    .sidebar-nav a.active, .sidebar-nav a:hover {
-        background: #22272e;
-        color: #58a6ff;
-        border-bottom: 4px solid #58a6ff;
-        border-left: none;
-    }
 }
+
+@font-face {
+    font-family: 'nintendoP_Humming-E_002pr';
+    src: url('../fonts/nintendoP_Humming-E_002pr.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     background: #181a1b url('../img/ACNH_Wallpaper.jpg') no-repeat center center fixed;
     background-size: cover;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'nintendoP_Humming-E_002pr', Arial, sans-serif;
     margin: 0;
-    color: #e1e4e8;
+    color: #f7f8e6;
+    
 }
 .container {
     max-width: 900px;
@@ -235,7 +221,6 @@ nav {
 }
 nav a {
     color: #e1e4e8;
-    font-weight: 600;
     text-decoration: none;
     padding: 10px 24px;
     border-radius: 8px;
@@ -243,11 +228,7 @@ nav a {
     border: 1px solid transparent;
     transition: background 0.2s, border 0.2s, color 0.2s;
 }
-nav a.active, nav a:hover {
-    background: #21262d;
-    color: #58a6ff;
-    border: 1px solid #30363d;
-}
+
 h2 {
     color: #58a6ff;
     margin-bottom: 10px;
@@ -364,6 +345,99 @@ footer {
     font-size: 0.95rem;
     margin-top: 32px;
 }
+/* Fondo de login */
+.login-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #22272e;
+  position: relative;
+}
+
+/* Imagen de fondo */
+.login-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* Caja de login */
+.login-box {
+  background: #2d333b;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(20,23,28,0.15);
+  min-width: 320px;
+  text-align: center;
+  z-index: 2;
+  opacity: 1;
+  position: relative;
+}
+
+/* Títulos */
+.login-title {
+  color: #58a6ff;
+  margin-bottom: 24px;
+}
+.register-title {
+  color: #8b949e;
+}
+
+/* Inputs */
+.login-input {
+  margin-bottom: 12px;
+  width: 90%;
+  padding: 8px;
+  background: #22272e;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 8px;
+}
+
+/* Botones */
+.login-btn {
+  background: #58a6ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #22272e;
+}
+.register-btn {
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #22272e;
+}
+
+/* Mensajes */
+.login-msg {
+  color: #e74c3c;
+  margin-top: 12px;
+  display: none;
+}
+
+/* Línea separadora */
+.login-hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #444;
+}
+
 @media (max-width: 900px) {
     .container {
         margin: 16px;

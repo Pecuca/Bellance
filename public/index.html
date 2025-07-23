@@ -5,225 +5,206 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Finanzas Personales</title>
     <link rel="stylesheet" href="./assets/styles/main.css">
+    <link href="public/assets/fonts/nintendoP_Humming-E_002pr.otf" rel="stylesheet" type="opentype">
 </head>
 <body>
-    <div id="loginView" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#22272e; position:relative;">
-        <img src="./assets/img/ACNH_Wallpaper.jpg" alt="Fondo" style="position:absolute; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:0; opacity:0.25; pointer-events:none;">
-        <div style="background:#2d333b; padding:32px 24px; border-radius:16px; box-shadow:0 4px 24px rgba(20,23,28,0.15); min-width:320px; text-align:center; z-index:2; opacity:1; position:relative;">
-            <h2 style="color:#58a6ff; margin-bottom:24px;">Iniciar Sesión</h2>
-            <form id="loginForm">
-                <input type="text" id="loginUser" placeholder="Usuario" style="margin-bottom:12px; width:90%; padding:8px; background:#22272e; color:#fff; border:1px solid #444; border-radius:8px;" required /><br>
-                <input type="password" id="loginPass" placeholder="Contraseña" style="margin-bottom:18px; width:90%; padding:8px; background:#22272e; color:#fff; border:1px solid #444; border-radius:8px;" required /><br>
-                <button type="submit" style="background:#58a6ff; color:#fff; border:none; border-radius:8px; padding:10px 24px; font-size:1rem; cursor:pointer; box-shadow:0 2px 8px #22272e;">Entrar</button>
-            </form>
-            <p id="loginMsg" style="color:#e74c3c; margin-top:12px; display:none;"></p>
-            <hr style="margin:24px 0; border:none; border-top:1px solid #444;">
-            <h3 style="color:#8b949e;">¿No tienes cuenta?</h3>
-            <form id="registerForm">
-                <input type="text" id="regUser" placeholder="Usuario" style="margin-bottom:12px; width:90%; padding:8px; background:#22272e; color:#fff; border:1px solid #444; border-radius:8px;" required /><br>
-                <input type="password" id="regPass" placeholder="Contraseña" style="margin-bottom:18px; width:90%; padding:8px; background:#22272e; color:#fff; border:1px solid #444; border-radius:8px;" required /><br>
-                <button type="submit" style="background:#27ae60; color:#fff; border:none; border-radius:8px; padding:10px 24px; font-size:1rem; cursor:pointer; box-shadow:0 2px 8px #22272e;">Registrarse</button>
-            </form>
-            <p id="regMsg" style="color:#e74c3c; margin-top:12px; display:none;"></p>
-        </div>
+  <div id="loginView" class="login-view">
+    <img src="./assets/img/ACNH_Wallpaper.jpg" alt="Fondo" class="login-bg">
+    <div class="login-box">
+      <h2 class="login-title">Iniciar Sesión</h2>
+      <form id="loginForm">
+        <input type="text" id="loginUser" class="login-input" placeholder="Usuario" required /><br>
+        <input type="password" id="loginPass" class="login-input" placeholder="Contraseña" required /><br>
+        <button type="submit" class="login-btn">Entrar</button>
+      </form>
+      <p id="loginMsg" class="login-msg"></p>
+      <hr class="login-hr">
+      <h3 class="register-title">¿No tienes cuenta?</h3>
+      <form id="registerForm">
+        <input type="text" id="regUser" class="login-input" placeholder="Usuario" required /><br>
+        <input type="password" id="regPass" class="login-input" placeholder="Contraseña" required /><br>
+        <button type="submit" class="register-btn">Registrarse</button>
+      </form>
+      <p id="regMsg" class="login-msg"></p>
     </div>
-    <div class="layout" style="display:none;">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <img src="./assets/img/BellanceLogo.png" alt="Logo">
-                </div>
-                <h1>Bellance</h1>
-                <div class="sidebar-user">
-                    <span class="user-avatar"></span>
-                    <span class="user-name" id="sidebarUserName">Juan Demo</span>
-                </div>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="#" class="active">Dashboard</a>
-                <a href="#">Transacciones</a>
-                <a href="#">Categorías</a>
-                <a href="#">Presupuestos</a>
-            </nav>
-            <div class="sidebar-quick">
-                <div class="sidebar-balance">
-                    <span class="sidebar-balance-label">Balance actual</span>
-                    <span class="sidebar-balance-value">$1,300</span>
-                </div>
-
-                <button class="sidebar-btn" id="sidebarSettingsBtn">Ajustes</button>
-                <button class="sidebar-btn logout">Cerrar sesión</button>
-            </div>
-            <div class="sidebar-help">
-        
-            </div>
-        </aside>
-        <div class="container">
-            <header>
-                <p>Controla tus ingresos, gastos y presupuestos de manera sencilla.</p>
-            </header>
-            <main>
-            <section id="dashboard" class="view-section">
-                <h2>¡Bienvenido a tu Dashboard!</h2>
-                <p style="color:#8b949e; margin-bottom:32px;">Aquí verás un resumen de tu situación financiera y accesos rápidos a tus funciones principales.</p>
-                <div class="summary-box">
-                    <div class="summary-item">
-                        <span>$2,500</span>
-                        Ingresos
-                    </div>
-                    <div class="summary-item">
-                        <span>$1,200</span>
-                        Gastos
-                    </div>
-                    <div class="summary-item">
-                        <span>$1,300</span>
-                        Balance
-                    </div>
-                </div>
-                <div>
-                    <h2>Visualización de Finanzas</h2>
-                    <div style="margin-bottom:16px;">
-                        <label for="chartType" style="font-weight:bold;">Tipo de gráfica:</label>
-                        <select id="chartType" style="margin-left:8px; margin-right:16px;">
-                            <option value="gastosCategoria">Gastos por categoría del mes (Dona)</option>
-                            <option value="balanceMensual">Balance real vs estimado (Líneas)</option>
-                            <option value="ingresosComparativo">Ingresos estimados vs reales (Barras)</option>
-                            <option value="evolucionBalance">Evolución del balance mensual (Líneas)</option>
-                            <option value="distribucionGastosIngresos">Distribución de gastos vs ingresos (Barras)</option>
-                        </select>
-                        <label for="monthFilter" style="font-weight:bold;">Mes:</label>
-                        <input type="month" id="monthFilter" style="margin-left:8px;" />
-                    </div>
-                    <div style="background:#22272e; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(20,23,28,0.10);">
-                        <canvas id="finanzasChart" width="600" height="300"></canvas>
-                    </div>
-                </div>
-            </section>
-            <section id="transactions" class="view-section" style="display:none;">
-                <div class="form-demo" style="margin-bottom: 28px;">
-                    <h2>Registrar/Editar Transacción</h2>
-                    <form>
-                        <label>Tipo</label>
-                        <select>
-                            <option>Ingreso</option>
-                            <option>Egreso</option>
-                        </select>
-                        <label>Monto</label>
-                        <input type="number" placeholder="Monto" />
-                        <label>Fecha</label>
-                        <input type="date" />
-                        <label>Categoría</label>
-                        <input type="text" placeholder="Categoría" />
-                        <label>Descripción</label>
-                        <input type="text" placeholder="Descripción" />
-                        <button type="submit">Guardar</button>
-                    </form>
-                </div>
-                <h2>Lista de Transacciones</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Tipo</th>
-                            <th>Categoría</th>
-                            <th>Monto</th>
-                            <th>Descripción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2025-07-01</td>
-                            <td>Ingreso</td>
-                            <td>Salario</td>
-                            <td>$2,000</td>
-                            <td>Pago mensual</td>
-                        </tr>
-                        <tr>
-                            <td>2025-07-03</td>
-                            <td>Egreso</td>
-                            <td>Alimentación</td>
-                            <td>$150</td>
-                            <td>Supermercado</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-            <section id="categories" class="view-section" style="display:none;">
-                <h2>Gestión de Categorías</h2>
-                <ul>
-                    <li>Alimentación <button>Editar</button> <button>Eliminar</button></li>
-                    <li>Transporte <button>Editar</button> <button>Eliminar</button></li>
-                    <li>Ocio <button>Editar</button> <button>Eliminar</button></li>
-                    <li>Servicios <button>Editar</button> <button>Eliminar</button></li>
-                    <li>Salud <button>Editar</button> <button>Eliminar</button></li>
-                    <li>Educación <button>Editar</button> <button>Eliminar</button></li>
-                    <li>Otros <button>Editar</button> <button>Eliminar</button></li>
-                </ul>
-                <div class="form-demo">
-                    <h2>Crear/Editar Categoría</h2>
-                    <form>
-                        <label>Nombre de la categoría</label>
-                        <input type="text" placeholder="Ej: Mascotas" />
-                        <button type="submit">Guardar</button>
-                    </form>
-                </div>
-            </section>
-            <section id="budgets" class="view-section" style="display:none;">
-                <h2>Configuración de Presupuestos</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mes</th>
-                            <th>Categoría</th>
-                            <th>Presupuesto Estimado</th>
-                            <th>Gasto Real</th>
-                            <th>Desviación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Julio 2025</td>
-                            <td>Alimentación</td>
-                            <td>$300</td>
-                            <td>$250</td>
-                            <td>+50</td>
-                        </tr>
-                        <tr>
-                            <td>Julio 2025</td>
-                            <td>Transporte</td>
-                            <td>$100</td>
-                            <td>$120</td>
-                            <td>-20</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="form-demo">
-                    <h2>Configurar Presupuesto</h2>
-                    <form>
-                        <label>Mes</label>
-                        <input type="month" />
-                        <label>Categoría</label>
-                        <input type="text" placeholder="Categoría" />
-                        <label>Monto estimado</label>
-                        <input type="number" placeholder="Monto" />
-                        <button type="submit">Guardar</button>
-                    </form>
-                </div>
-            </section>
-            </main>
-            <footer>
-                <p>&copy; 2025 Finanzas Personales Web. Todos los derechos reservados.</p>
-            </footer>
+  </div>
+  <div class="layout" style="display:none;">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="./assets/img/BellanceLogo.png" alt="Logo">
         </div>
-    </div>
+        <h1>Bellance</h1>
+        <div class="sidebar-user">
+          <span class="user-avatar"></span>
+          <span class="user-name" id="sidebarUserName">Juan Demo</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Transacciones</a>
+        <a href="#">Categorías</a>
+        <a href="#">Presupuestos</a>
+      </nav>
+      <div class="sidebar-quick">
 
-    <!-- Modal de ayuda -->
+        <button class="sidebar-btn" id="sidebarSettingsBtn">Ajustes</button>
+        <button class="sidebar-btn logout">Cerrar sesión</button>
+      </div>
+      <div class="sidebar-help">
+    
+      </div>
+    </aside>
+    <div class="container">
+      <header>
+        <p>Controla tus ingresos, gastos y presupuestos de manera sencilla.</p>
+      </header>
+      <main>
+      <section id="dashboard" class="view-section">
+        <h2>¡Bienvenido a tu Dashboard!</h2>
+        <p style="color:#8b949e; margin-bottom:32px;">Aquí verás un resumen de tu situación financiera y accesos rápidos a tus funciones principales.</p>
+        <div class="summary-box">
+          <div class="summary-item">
+            <span>$2,500</span>
+            Ingresos
+          </div>
+          <div class="summary-item">
+            <span>$1,200</span>
+            Gastos
+          </div>
+          <div class="summary-item">
+            <span>$1,300</span>
+            Balance
+          </div>
+        </div>
+        <div>
+          <h2>Visualización de Finanzas</h2>
+          <div style="margin-bottom:16px;">
+            <label for="chartType" style="font-weight:bold;">Tipo de gráfica:</label>
+            <select id="chartType" style="margin-left:8px; margin-right:16px;">
+              <option value="gastosCategoria">Gastos por categoría del mes (Dona)</option>
+              <option value="balanceMensual">Balance real vs estimado (Líneas)</option>
+              <option value="ingresosComparativo">Ingresos estimados vs reales (Barras)</option>
+              <option value="evolucionBalance">Evolución del balance mensual (Líneas)</option>
+              <option value="distribucionGastosIngresos">Distribución de gastos vs ingresos (Barras)</option>
+            </select>
+            <label for="monthFilter" style="font-weight:bold;">Mes:</label>
+            <input type="month" id="monthFilter" style="margin-left:8px;" />
+          </div>
+          <div style="background:#22272e; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(20,23,28,0.10);">
+            <canvas id="finanzasChart" width="600" height="300"></canvas>
+          </div>
+        </div>
+      </section>
+      <section id="transactions" class="view-section" style="display:none;">
+        <h2>Transacciones</h2>
+        <form id="transForm" style="margin-bottom:18px;">
+            <label>Tipo</label>
+            <select required>
+                <option value="Ingreso">Ingreso</option>
+                <option value="Gasto">Gasto</option>
+            </select>
+            <label>Monto</label>
+            <input type="number" required min="1" placeholder="Monto" />
+            <label>Fecha</label>
+            <input type="date" required />
+            <label>Categoría</label>
+            <input type="text" required placeholder="Categoría" />
+            <label>Descripción</label>
+            <input type="text" placeholder="Descripción" />
+            <button type="submit">Registrar</button>
+        </form>
+        <table id="transTable">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Categoría</th>
+                    <th>Monto</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se llenan las filas dinámicamente -->
+            </tbody>
+        </table>
+      </section>
+      <section id="categories" class="view-section" style="display:none;">
+        <h2>Gestión de Categorías</h2>
+        <ul>
+          <li>Alimentación <button>Editar</button> <button>Eliminar</button></li>
+          <li>Transporte <button>Editar</button> <button>Eliminar</button></li>
+          <li>Ocio <button>Editar</button> <button>Eliminar</button></li>
+          <li>Servicios <button>Editar</button> <button>Eliminar</button></li>
+          <li>Salud <button>Editar</button> <button>Eliminar</button></li>
+          <li>Educación <button>Editar</button> <button>Eliminar</button></li>
+          <li>Otros <button>Editar</button> <button>Eliminar</button></li>
+        </ul>
+        <div class="form-demo">
+          <h2>Crear/Editar Categoría</h2>
+          <form>
+            <label>Nombre de la categoría</label>
+            <input type="text" placeholder="Ej: Mascotas" />
+            <button type="submit">Guardar</button>
+          </form>
+        </div>
+      </section>
+      <section id="budgets" class="view-section" style="display:none;">
+        <h2>Configuración de Presupuestos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Mes</th>
+              <th>Categoría</th>
+              <th>Presupuesto Estimado</th>
+              <th>Gasto Real</th>
+              <th>Desviación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Julio 2025</td>
+              <td>Alimentación</td>
+              <td>$300</td>
+              <td>$250</td>
+              <td>+50</td>
+            </tr>
+            <tr>
+              <td>Julio 2025</td>
+              <td>Transporte</td>
+              <td>$100</td>
+              <td>$120</td>
+              <td>-20</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="form-demo">
+          <h2>Configurar Presupuesto</h2>
+          <form>
+            <label>Mes</label>
+            <input type="month" />
+            <label>Categoría</label>
+            <input type="text" placeholder="Categoría" />
+            <label>Monto estimado</label>
+            <input type="number" placeholder="Monto" />
+            <button type="submit">Guardar</button>
+          </form>
+        </div>
+      </section>
+      </main>
+      <footer>
+        <p>&copy; Finanzas Personales Web. Alex Hernandez y Ronald del Moral | Cli. Web 2025B.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal de ayuda -->
 <div id="helpModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(24,26,27,0.85); z-index:9999; justify-content:center; align-items:center;">
-    <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:center; position:relative;">
-        <button id="closeHelp" style="position:absolute; top:12px; right:12px; background:#58a6ff; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:1.2rem; cursor:pointer;">×</button>
-        <h2 style="color:#58a6ff;">¿Necesitas ayuda?</h2>
-        <p style="color:#e1e4e8;">Este es tu asistente de finanzas Bellance.<br>¡Aquí puedes controlar tus ingresos, gastos y presupuestos!</p>
-    </div>
+  <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:center; position:relative;">
+    <button id="closeHelp" style="position:absolute; top:12px; right:12px; background:#58a6ff; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:1.2rem; cursor:pointer;">×</button>
+    <h2 style="color:#58a6ff;">¿Necesitas ayuda?</h2>
+    <p style="color:#e1e4e8;">Este es tu asistente de finanzas Bellance.<br>¡Aquí puedes controlar tus ingresos, gastos y presupuestos!</p>
+  </div>
 </div>
 
 <!-- Botón flotante de ayuda -->

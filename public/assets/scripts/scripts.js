@@ -51,6 +51,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             userAvatar.textContent = user.slice(0, 2).toUpperCase();
                         }
                     }, 100);
+
+                    // Nuevo: Cargar transacciones del usuario
+                    currentUser = user;
+                    window.getTransaccionesByUser(user).then(trs => {
+                        transacciones = trs;
+                        renderChart(chartTypeSelect.value); // Actualiza los gráficos con los datos reales
+                        renderTransTable(); // Renderiza la tabla de transacciones
+                    });
                 }
             });
         });
@@ -144,16 +152,8 @@ const monthFilter = document.getElementById('monthFilter');
 let finanzasChart = null;
 
 // Datos de ejemplo para transacciones (en producción, esto vendría de una base de datos)
-let transacciones = [
-    {fecha: '2025-07-01', tipo: 'Ingreso', categoria: 'Salario', monto: 2000, descripcion: 'Pago mensual'},
-    {fecha: '2025-07-03', tipo: 'Egreso', categoria: 'Alimentación', monto: 150, descripcion: 'Supermercado'},
-    {fecha: '2025-07-05', tipo: 'Egreso', categoria: 'Transporte', monto: 60, descripcion: 'Bus'},
-    {fecha: '2025-07-10', tipo: 'Egreso', categoria: 'Ocio', monto: 80, descripcion: 'Cine'},
-    {fecha: '2025-07-12', tipo: 'Egreso', categoria: 'Servicios', monto: 90, descripcion: 'Luz'},
-    {fecha: '2025-07-15', tipo: 'Egreso', categoria: 'Salud', monto: 60, descripcion: 'Farmacia'},
-    {fecha: '2025-07-18', tipo: 'Egreso', categoria: 'Educación', monto: 40, descripcion: 'Libros'},
-    {fecha: '2025-07-20', tipo: 'Egreso', categoria: 'Otros', monto: 30, descripcion: 'Varios'}
-];
+let transacciones = [];
+let currentUser = null;
 
 function getMonthString(date) {
     // date: '2025-07-01' => '2025-07'
@@ -276,7 +276,7 @@ if (chartTypeSelect && chartCanvas) {
     renderChart(chartTypeSelect.value);
 
     // Actualización en tiempo real al registrar transacción (demo)
-    const transForm = document.querySelector('#transactions form');
+    const transForm = document.getElementById('transForm');
     if (transForm) {
         transForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -285,12 +285,42 @@ if (chartTypeSelect && chartCanvas) {
             const fecha = transForm.querySelector('input[type="date"]').value;
             const categoria = transForm.querySelector('input[placeholder="Categoría"]').value;
             const descripcion = transForm.querySelector('input[placeholder="Descripción"]').value;
-            if (fecha && categoria && monto) {
-                transacciones.push({fecha, tipo, categoria, monto, descripcion});
-                renderChart(chartTypeSelect.value);
+            if (fecha && categoria && monto && currentUser) {
+                const nuevaTrans = {fecha, tipo, categoria, monto, descripcion, username: currentUser};
+                window.addTransaccion(nuevaTrans).then(() => {
+                    window.getTransaccionesByUser(currentUser).then(trs => {
+                        transacciones = trs;
+                        renderChart(chartTypeSelect.value);
+                        renderTransTable();
+                    });
+                });
             }
         });
     }
+}
+
+function renderTransTable() {
+    const table = document.getElementById('transTable');
+    if (!table) return;
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+    if (!transacciones.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="5" style="text-align:center;color:#888;">Sin transacciones</td>';
+        tbody.appendChild(tr);
+        return;
+    }
+    transacciones.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${t.fecha}</td>
+            <td>${t.tipo}</td>
+            <td>${t.categoria}</td>
+            <td>${t.monto}</td>
+            <td>${t.descripcion || ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 // --- LOGOUT ---
