@@ -170,6 +170,19 @@ if (toggleTransForm && sidebarTransForm) {
     };
 }
 
+// --- Moneda global ---
+let currentCurrency = localStorage.getItem('bellance_currency') || 'USD';
+function getCurrencySymbol() {
+    switch (currentCurrency) {
+        case 'USD': return '$';
+        case 'EUR': return '€';
+        case 'UYU': return '$U';
+        case 'MXN': return '$';
+        case 'VES': return 'Bs';
+        default: return '$';
+    }
+}
+
 // Chart.js: Finanzas
 const chartTypeSelect = document.getElementById('chartType');
 const chartCanvas = document.getElementById('finanzasChart');
@@ -403,6 +416,28 @@ function renderChart(type) {
         configPromise = Promise.resolve(configFn);
     }
     configPromise.then(config => {
+        // Modifica los labels de los montos para incluir el símbolo de moneda
+        if (config && config.data && config.data.datasets) {
+            const symbol = getCurrencySymbol();
+            // Para gráficos de barras y líneas, modifica los tooltips/callbacks
+            if (!config.options.plugins) config.options.plugins = {};
+            config.options.plugins.tooltip = config.options.plugins.tooltip || {};
+            config.options.plugins.tooltip.callbacks = config.options.plugins.tooltip.callbacks || {};
+            config.options.plugins.tooltip.callbacks.label = function(context) {
+                let label = context.dataset.label || '';
+                if (label) label += ': ';
+                label += symbol + context.parsed.y;
+                return label;
+            };
+            // Para gráficos de doughnut, modifica datalabels
+            if (config.plugins && config.plugins.includes(ChartDataLabels)) {
+                config.options.plugins.datalabels = config.options.plugins.datalabels || {};
+                config.options.plugins.datalabels.formatter = function(value, context) {
+                    const label = context.chart.data.labels[context.dataIndex];
+                    return label + "\n" + symbol + value;
+                };
+            }
+        }
         finanzasChart = new Chart(chartCanvas, config);
     });
 }
@@ -455,13 +490,14 @@ function renderTransTable() {
         tbody.appendChild(tr);
         return;
     }
+    const symbol = getCurrencySymbol();
     transacciones.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${t.fecha}</td>
             <td>${t.tipo}</td>
             <td>${t.categoria}</td>
-            <td>${t.monto}</td>
+            <td>${symbol}${t.monto}</td>
             <td>${t.descripcion || ''}</td>
         `;
         tbody.appendChild(tr);
@@ -634,30 +670,57 @@ if (changePassForm) {
 
 // Cambiar formato de moneda
 if (currencyFormat) {
+    // Inicializar select con la moneda guardada
+    currencyFormat.value = currentCurrency;
     currencyFormat.onchange = function() {
-        // Aquí puedes guardar la preferencia en localStorage o IndexedDB
-        settingsMsg.textContent = 'Formato de moneda actualizado (demo)';
+        currentCurrency = currencyFormat.value;
+        localStorage.setItem('bellance_currency', currentCurrency);
+        settingsMsg.textContent = 'Formato de moneda actualizado';
         settingsMsg.style.display = 'block';
         setTimeout(() => settingsMsg.style.display = 'none', 2000);
+        // Actualizar UI
+        updateDashboardSummary();
+        renderTransTable();
+        loadPresupuestosMesConfigTable();
+        renderChart(chartTypeSelect.value);
     };
 }
 
 // Eliminar cuenta
 if (deleteAccountBtn) {
     deleteAccountBtn.onclick = function() {
-        if (confirm('¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) {
-            // Aquí deberías borrar el usuario de IndexedDB y cerrar sesión
-            settingsMsg.textContent = 'Cuenta eliminada (demo)';
-            settingsMsg.style.display = 'block';
-            setTimeout(() => {
-                settingsModal.style.display = 'none';
-                // Simular logout
-                document.querySelector('.layout').style.display = 'none';
-                document.getElementById('loginView').style.display = 'flex';
-            }, 1500);
-        }
+        // Mostrar modal personalizado en vez de confirm()
+        openDeleteAccountModal();
     };
 }
+
+// --- Modal de confirmación para eliminar cuenta ---
+const deleteAccountModal = document.getElementById('deleteAccountModal');
+const deleteAccountConfirm = document.getElementById('deleteAccountConfirm');
+const deleteAccountCancel = document.getElementById('deleteAccountCancel');
+
+function openDeleteAccountModal() {
+    if (deleteAccountModal) deleteAccountModal.style.display = 'flex';
+}
+function closeDeleteAccountModal() {
+    if (deleteAccountModal) deleteAccountModal.style.display = 'none';
+}
+if (deleteAccountCancel) deleteAccountCancel.onclick = closeDeleteAccountModal;
+if (deleteAccountConfirm) {
+    deleteAccountConfirm.onclick = function() {
+        // Aquí deberías borrar el usuario de IndexedDB y cerrar sesión
+        settingsMsg.textContent = 'Cuenta eliminada (demo)';
+        settingsMsg.style.display = 'block';
+        closeDeleteAccountModal();
+        setTimeout(() => {
+            settingsModal.style.display = 'none';
+            // Simular logout
+            document.querySelector('.layout').style.display = 'none';
+            document.getElementById('loginView').style.display = 'flex';
+        }, 1500);
+    };
+}
+
 // --- FIN AJUSTES ---
 // --- PRESUPUESTOS ---
 
@@ -694,12 +757,13 @@ function loadPresupuestosMesConfigTable() {
             tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#888;">Sin presupuestos registrados</td></tr>`;
             return;
         }
+        const symbol = getCurrencySymbol();
         presupuestos.forEach(p => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${mesToString(p.mes)}</td>
-                <td>$${p.ingresoEsperado || 0}</td>
-                <td>$${p.egresoEsperado || 0}</td>
+                <td>${symbol}${p.ingresoEsperado || 0}</td>
+                <td>${symbol}${p.egresoEsperado || 0}</td>
             `;
             tbody.appendChild(tr);
         });
@@ -744,12 +808,13 @@ function updateDashboardSummary() {
     const balanceReal = ingresoReal - egresoReal;
 
     // Muestra los montos reales en el dashboard
+    const symbol = getCurrencySymbol();
     const ingresosEl = document.getElementById('dashboardIngresos');
     const gastosEl = document.getElementById('dashboardGastos');
     const balanceEl = document.getElementById('dashboardBalance');
-    if (ingresosEl) ingresosEl.textContent = `$${ingresoReal}`;
-    if (gastosEl) gastosEl.textContent = `$${egresoReal}`;
-    if (balanceEl) balanceEl.textContent = `$${balanceReal}`;
+    if (ingresosEl) ingresosEl.textContent = `${symbol}${ingresoReal}`;
+    if (gastosEl) gastosEl.textContent = `${symbol}${egresoReal}`;
+    if (balanceEl) balanceEl.textContent = `${symbol}${balanceReal}`;
 };
 
 

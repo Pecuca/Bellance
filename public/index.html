@@ -222,6 +222,15 @@
   </div>
 </div>
 
+<!-- Modal de confirmación para eliminar cuenta -->
+<div id="deleteAccountModal" class="global-msg" style="display:none; flex-direction:column; align-items:center; max-width:340px;">
+  <span id="deleteAccountMsg" style="margin-bottom:16px;">¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.</span>
+  <div style="display:flex; gap:16px;">
+    <button id="deleteAccountConfirm" class="btn" style="background:#ea4661;">Eliminar</button>
+    <button id="deleteAccountCancel" class="btn" style="background:#39a19e;">Cancelar</button>
+  </div>
+</div>
+
 <!-- Contenedor de mensajes globales -->
 <div id="globalMsg" class="global-msg" style="display:none;">
   <span id="globalMsgText"></span>
