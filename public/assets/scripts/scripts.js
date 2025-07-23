@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         regMsg.style.display = 'block';
                     } else {
                         window.addUsuario({username: user, password: pass}).then(() => {
-                                regMsg.textContent = 'Usuario registrado. Ahora puedes iniciar sesión.';
+                                regMsg.textContent = 'Usuario registrado.';
                                 regMsg.style.display = 'block';
                         });
                     }
@@ -341,19 +341,36 @@ function renderCategorias() {
     categorias.forEach(cat => {
         const li = document.createElement('li');
         li.innerHTML = `
-            ${cat.nombre}
+            <span class="cat-name">${cat.nombre}</span>
             <button data-id="${cat.id}" class="edit-cat-btn">Editar</button>
             <button data-id="${cat.id}" class="delete-cat-btn">Eliminar</button>
         `;
         ul.appendChild(li);
-    });
-    // Botones eliminar
-    ul.querySelectorAll('.delete-cat-btn').forEach(btn => {
-        btn.onclick = function() {
-            const id = Number(this.dataset.id);
-            window.deleteCategoria(id).then(() => {
-                loadCategorias();
-            });
+
+        // Botón editar
+        li.querySelector('.edit-cat-btn').onclick = function() {
+            const span = li.querySelector('.cat-name');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = cat.nombre;
+            input.style.marginRight = '8px';
+            span.replaceWith(input);
+
+            this.style.display = 'none'; // Oculta el botón editar
+
+            // Botón guardar
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Guardar';
+            saveBtn.className = 'save-cat-btn';
+            li.insertBefore(saveBtn, li.querySelector('.delete-cat-btn'));
+
+            saveBtn.onclick = function() {
+                const newName = input.value.trim();
+                if (!newName) return;
+                window.updateCategoria({...cat, nombre: newName}).then(() => {
+                    loadCategorias();
+                });
+            };
         };
     });
 }
