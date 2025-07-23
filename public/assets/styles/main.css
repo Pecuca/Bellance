@@ -141,7 +141,7 @@
     width: 220px;
 }
 .sidebar-header {
-    padding: 12px 0 18px 0;
+    padding: 50px 0 18px 0;
     text-align: center;
     border-bottom: 1px solid #39a19e;
 }
@@ -226,7 +226,7 @@ body {
 }
 .container {
     max-width: 700px;
-    margin: 40px auto;
+    margin: 80px auto 40px auto; /* Aumenta el margin-top a 80px */
     background: #abd7c7;
     border: 8px solid #91c2b3;
     border-radius: 16px;
@@ -705,7 +705,7 @@ footer {
 }
 @media (max-width: 900px) {
     .container {
-        margin: 16px;
+        margin: 40px 16px 16px 16px; /* También aumenta el margin-top en mobile */
         padding: 18px 8px;
     }
     nav {
