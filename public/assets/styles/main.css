@@ -96,15 +96,15 @@
 /* Botón de ajustes en el sidebar */
 #sidebarSettingsBtn,
 .sidebar-btn#sidebarSettingsBtn {
-    background: #58a6ff;
-    color: #fff;
+    background: #ffdc8a;
+    color: #5c4434;
     border: none;
     border-radius: 23px;
     font-size: 1rem;
     cursor: pointer;
     padding: 10px 25px;
     margin-bottom: 2px;
-    box-shadow: 0px 4px #2f86c0;
+    box-shadow: 0px 4px #bba266;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
     font-weight: 600;
     letter-spacing: 0.2px;
@@ -225,7 +225,7 @@ body {
     
 }
 .container {
-    max-width: 900px;
+    max-width: 700px;
     margin: 40px auto;
     background: #abd7c7;
     border: 8px solid #91c2b3;
@@ -251,16 +251,16 @@ header p {
     padding: 8px;
     border-radius: 6px;
     border: none;
-    background: #f6ece0;
+    background: #e0e1cd;
     color: #5f5b53;
     font-size: 1rem;
-    margin-bottom: 16px;
+    margin-bottom: 16px;;
 }
 
 .chart-select{
     padding: 8px;
     border-radius: 6px;
-    margin-right: 16px;
+    margin-right: 14px;
     font-family: 'nintendoP_Humming-E_002pr', Arial, sans-serif;
 }
 
@@ -450,7 +450,7 @@ li button.delete-cat-btn:hover {
     padding: 18px;
     margin-bottom: 18px;
     display: flex;
-    gap: 40px;
+    gap: 60px;
     justify-content: space-around;
     border: none;
 }
@@ -555,14 +555,14 @@ footer {
 
 /* Botones */
 .login-btn {
-  background: #58a6ff;
-  color: #fff;
+  background: #ffdc8a;
+  color: #5c4434;
   border: none;
   border-radius: 17px;
   padding: 10px 24px;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 4px #2f86c0;
+  box-shadow: 0 4px #c3b88a;
   font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
   font-weight: 600;
   letter-spacing: 0.2px;

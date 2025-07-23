@@ -76,17 +76,17 @@
         </div>
         <div>
           <h2>Visualización de Finanzas</h2>
-          <div style="margin-bottom:16px;">
-            <label for="chartType" style="color: #455c53; margin-left: 20px;">Tipo de gráfica:</label>
-            <select id="chartType" class="chart-select">
+          <div style="margin-bottom:16px; display: flex;">
+            <label for="chartType" style="color: #455c53; margin-left: 0px; font-size: 0.9em;">Tipo de gráfica:</label>
+            <select id="chartType" class="chart-select" style="font-size: 0.9em;">
               <option value="gastosCategoria">Gastos por Categoría</option>
               <option value="balanceMensual">Balance Mensual</option>
               <option value="ingresosComparativo">Ingresos Comparativo</option>
               <option value="evolucionBalance">Evolución Balance</option>
               <option value="distribucionGastosIngresos">Distribución Gastos/Ingresos</option>
             </select>
-            <label for="monthFilter" style="color: #455c53; margin-left: 75px;">Mes:</label>
-            <input type="month" id="monthFilter" class="chart-select">
+            <label for="monthFilter" style="color: #455c53; margin-left: 20px; margin-right: 20px;">Mes:</label>
+            <input type="month" id="monthFilter" class="chart-select" style="font-size: 0.9em;">
           </div>
           <div style="background:#f8f6e8; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(20,23,28,0.10);">
             <canvas id="finanzasChart" width="600" height="300"></canvas>
@@ -172,10 +172,10 @@
 
   <!-- Modal de ayuda -->
 <div id="helpModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(24,26,27,0.85); z-index:9999; justify-content:center; align-items:center;">
-  <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:center; position:relative;">
+  <div style="background:#f7f8e6; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:center; position:relative;">
     <button id="closeHelp" style="position:absolute; top:12px; right:12px; background:#58a6ff; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:1.2rem; cursor:pointer;">×</button>
-    <h2 style="color:#58a6ff;">¿Necesitas ayuda?</h2>
-    <p style="color:#e1e4e8;">Este es tu asistente de finanzas Bellance.<br>¡Aquí puedes controlar tus ingresos, gastos y presupuestos!</p>
+    <h2 style="color:#5c4434;">¿Necesitas ayuda?</h2>
+    <p style="color:#5c4434;">Este es tu asistente de finanzas Bellance.<br>¡Aquí puedes controlar tus ingresos, gastos y presupuestos!</p>
   </div>
 </div>
 
@@ -184,23 +184,23 @@
 
 <!-- Modal de ajustes -->
 <div id="settingsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(24,26,27,0.85); z-index:9999; justify-content:center; align-items:center;">
-  <div style="background:#22272e; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:left; position:relative; min-width:320px;">
+  <div style="background:#f7f8e6; border-radius:16px; padding:32px 24px; box-shadow:0 8px 32px rgba(20,23,28,0.25); text-align:left; position:relative; min-width:320px;">
     <button id="closeSettings" style="position:absolute; top:12px; right:12px;">×</button>
-    <h2 style="color:#58a6ff;">Ajustes de Perfil</h2>
+    <h2 style="color:#5c4434;">Ajustes de Perfil</h2>
     <form id="editProfileForm" style="margin-bottom:18px;">
-      <label style="color:#e1e4e8;">Nombre de usuario</label>
-      <input type="text" id="editUsername" style="width:100%;margin-bottom:12px;padding:8px;background:#22272e;color:#fff;border:1px solid #444;border-radius:8px;" />
-      <button type="submit" style="background:#58a6ff;color:#fff;border:none;border-radius:8px;padding:8px 18px;cursor:pointer;">Guardar cambios</button>
+      <label style="color:#5c4434;">Nombre de usuario</label>
+      <input type="text" id="editUsername" style="width:100%;margin-bottom:12px;padding:8px;background:#ece5cd;color:#fff;border:1px solid #444;border-radius:8px;" />
+      <button type="submit" style="background:#ffdc8a;color:#5c4434;border:none;border-radius:8px;padding:8px 18px;cursor:pointer;">Guardar cambios</button>
     </form>
     <form id="changePassForm" style="margin-bottom:18px;">
-      <label style="color:#e1e4e8;">Cambiar contraseña</label>
-      <input type="password" id="oldPass" placeholder="Contraseña actual" style="width:100%;margin-bottom:8px;padding:8px;background:#22272e;color:#fff;border:1px solid #444;border-radius:8px;" />
-      <input type="password" id="newPass" placeholder="Nueva contraseña" style="width:100%;margin-bottom:8px;padding:8px;background:#22272e;color:#fff;border:1px solid #444;border-radius:8px;" />
-      <button type="submit" style="background:#27ae60;color:#fff;border:none;border-radius:8px;padding:8px 18px;cursor:pointer;">Cambiar contraseña</button>
+      <label style="color:#5c4434;">Cambiar contraseña</label>
+      <input type="password" id="oldPass" placeholder="Contraseña actual" style="width:100%;margin-bottom:8px;padding:8px;background:#ece5cd;color:#5c4434;border:1px solid #444;border-radius:8px;" />
+      <input type="password" id="newPass" placeholder="Nueva contraseña" style="width:100%;margin-bottom:8px;padding:8px;background:#ece5cd;color:#5c4434;border:1px solid #444;border-radius:8px;" />
+      <button type="submit" style="background:#ffdc8a;color:#5c4434;border:none;border-radius:8px;padding:8px 18px;cursor:pointer;">Cambiar contraseña</button>
     </form>
     <div style="margin-bottom:18px;">
-      <label style="color:#e1e4e8;">Formato de moneda</label>
-      <select id="currencyFormat" style="width:100%;padding:8px;background:#22272e;color:#fff;border:1px solid #444;border-radius:8px;">
+      <label style="color:#5c4434;">Formato de moneda</label>
+      <select id="currencyFormat" style="width:100%;padding:8px;background:#ece5cd;color:#5c4434;border:1px solid #444;border-radius:8px;">
         <option value="USD">$ (USD)</option>
         <option value="EUR">€ (EUR)</option>
         <option value="UYU">$U (UYU)</option>
