@@ -718,7 +718,7 @@ footer {
     }
 }
 
-/* Estilos para el modal de ajustes */
+/* Estilos pastel para la pestaña/modal de ajustes */
 #settingsModal {
     display: none;
     position: fixed;
@@ -726,23 +726,23 @@ footer {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(24,26,27,0.85);
+    background: rgba(220, 220, 220, 0.85); /* pastel overlay */
     z-index: 9999;
     justify-content: center;
     align-items: center;
 }
 
-/* Mejoras visuales para el modal de ajustes */
 #settingsModal > div {
-    background: #22272e;
+    background: #fdf7e2; /* pastel amarillo claro */
     border-radius: 18px;
     padding: 36px 28px 28px 28px;
-    box-shadow: 0 8px 32px rgba(20,23,28,0.25);
+    box-shadow: 0 8px 32px rgba(180,180,180,0.18);
     text-align: left;
     position: relative;
     min-width: 340px;
     max-width: 98vw;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+    border: 6px solid #abd7c7; /* pastel verde agua */
 }
 
 #settingsModal h2 {
@@ -752,15 +752,17 @@ footer {
     font-size: 1.4rem;
     font-weight: 700;
     letter-spacing: 0.5px;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 
 #settingsModal label {
-    color: #e1e4e8;
+    color: #574c42;
     font-weight: 500;
     margin-bottom: 7px;
     display: block;
     font-size: 1rem;
     letter-spacing: 0.2px;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 
 #settingsModal input[type="text"],
@@ -769,9 +771,9 @@ footer {
     width: 100%;
     margin-bottom: 15px;
     padding: 10px;
-    background: #23282f;
-    color: #fff;
-    border: 1.5px solid #444;
+    background: #fffbe6; /* pastel amarillo */
+    color: #574c42;
+    border: 1.5px solid #abd7c7;
     border-radius: 9px;
     font-size: 1.05rem;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
@@ -787,8 +789,8 @@ footer {
 
 #settingsModal button[type="submit"],
 #settingsModal #deleteAccountBtn {
-    background: #58a6ff;
-    color: #fff;
+    background: #a3e4d7; /* pastel verde agua */
+    color: #574c42;
     border: none;
     border-radius: 9px;
     padding: 10px 22px;
@@ -797,49 +799,61 @@ footer {
     margin-top: 10px;
     margin-bottom: 10px;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
     font-weight: 600;
     letter-spacing: 0.2px;
+    box-shadow: 0 2px #abd7c7;
+    display: inline-block;
 }
 
 #settingsModal button[type="submit"]:hover {
-    background: #1b987f;
+    background: #58bbab;
+    color: #fff;
 }
 
 #settingsModal #deleteAccountBtn {
-    background: #e74c3c;
+    background: #ffb3b3; /* pastel rojo */
+    color: #574c42;
     margin-top: 22px;
+    box-shadow: 0 2px #ea4661;
 }
 
 #settingsModal #deleteAccountBtn:hover {
-    background: #ff7675;
+    background: #ea4661;
+    color: #fff;
 }
 
 #settingsModal #settingsMsg {
-    color: #e74c3c;
+    color: #ea4661;
     margin-top: 14px;
     display: none;
     font-size: 1rem;
     font-weight: 600;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 
 #closeSettings {
     position: absolute;
     top: 12px;
     right: 12px;
-    background: #58a6ff;
-    color: #fff;
+    background: #a3e4d7;
+    color: #574c42;
     border: none;
     border-radius: 50%;
     width: 32px;
     height: 32px;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
     font-weight: bold;
+    box-shadow: 0 2px #abd7c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 #closeSettings:hover {
-    background: #1b987f;
+    background: #58bbab;
+    color: #fff;
 }
 
 #settingsModal form {
@@ -847,12 +861,13 @@ footer {
 }
 
 #settingsModal select {
-    background: #23282f;
-    color: #fff;
-    border: 1.5px solid #444;
+    background: #fffbe6;
+    color: #574c42;
+    border: 1.5px solid #abd7c7;
     border-radius: 9px;
     font-size: 1.05rem;
     padding: 10px;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 
 /* Responsive para modal de ajustes */
