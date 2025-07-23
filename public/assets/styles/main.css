@@ -881,7 +881,7 @@ footer {
 /* Estilo personalizado para input[type="date"] */
 input[type="date"].chart-select,
 input[type="date"] {
-    background: #f8f6e8;
+    background: #e0e1cd;
     color: #574c42;
     border: 1.5px solid #abd7c7;
     border-radius: 8px;
