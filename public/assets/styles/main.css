@@ -43,8 +43,8 @@
     justify-content: center;
 }
 .user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 50px;
+    height: 50px;
     background: #fdf7e2;
     color: #574c42;
     border-radius: 50%;
@@ -221,7 +221,7 @@ body {
     background-size: cover;
     font-family: 'nintendoP_Humming-E_002pr', Arial, sans-serif;
     margin: 0;
-    color: #f7f8e6;
+    color: #5c4434;
     
 }
 .container {
@@ -370,7 +370,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 18px;
-    background: #21262d;
+    background: #fdf7e2;
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid #30363d;
@@ -386,7 +386,7 @@ th {
 }
 tr:last-child td {
     border-bottom: none;
-    background-color: #f8f6e8;
+    background-color: #fdf7e2;
     color: #656056;
 }
 ul {
