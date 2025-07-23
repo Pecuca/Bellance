@@ -73,19 +73,28 @@ document.addEventListener('DOMContentLoaded', function() {
     if (registerForm) {
         registerForm.addEventListener('submit', function(e) {
             e.preventDefault();
-                const user = document.getElementById('regUser').value.trim();
-                const pass = document.getElementById('regPass').value;
-                if (!user || !pass) return;
-                window.getUsuario(user).then(u => {
-                    if (u) {
-                        regMsg.textContent = 'El usuario ya existe.';
-                        regMsg.style.display = 'block';
-                    } else {
-                        window.addUsuario({username: user, password: pass}).then(() => {
-                                regMsg.textContent = 'Usuario registrado.';
-                                regMsg.style.display = 'block';
+            const user = document.getElementById('regUser').value.trim();
+            const pass = document.getElementById('regPass').value;
+            if (!user || !pass) return;
+            window.getUsuario(user).then(u => {
+                if (u) {
+                    regMsg.textContent = "El usuario ya existe.";
+                } else {
+                    window.addUsuario({username: user, password: pass}).then(() => {
+                        // Categorías predefinidas
+                        const categoriasDefault = [
+                            "Alimentación", "Transporte", "Ocio", "Servicios", "Salud", "Educación", "Otros"
+                        ];
+                        Promise.all(
+                            categoriasDefault.map(nombre =>
+                                window.addCategoria({nombre, username: user})
+                            )
+                        ).then(() => {
+                            regMsg.textContent = "Usuario registrado correctamente.";
+                            // Aquí puedes hacer login automático o mostrar mensaje
                         });
-                    }
+                    });
+                }
             });
         });
     }
@@ -298,6 +307,7 @@ if (chartTypeSelect && chartCanvas) {
                         transacciones = trs;
                         renderChart(chartTypeSelect.value);
                         renderTransTable();
+                        updateDashboardSummary(); // <-- Agrega esta línea
                     });
                 });
             }
@@ -496,3 +506,131 @@ if (deleteAccountBtn) {
     };
 }
 // --- FIN AJUSTES ---
+// --- PRESUPUESTOS ---
+
+// Guardar presupuesto
+const presupuestoForm = document.getElementById('presupuestoForm');
+if (presupuestoForm) {
+    presupuestoForm.onsubmit = function(e) {
+        e.preventDefault();
+        const mes = presupuestoForm.querySelector('input[type="month"]').value;
+        const ingresoEsperado = parseFloat(presupuestoForm.querySelector('input[placeholder="Ingreso esperado"]').value);
+        const egresoEsperado = parseFloat(presupuestoForm.querySelector('input[placeholder="Egreso esperado"]').value);
+        if (!mes || isNaN(ingresoEsperado) || isNaN(egresoEsperado) || !currentUser) return;
+        window.addPresupuesto({
+            username: currentUser.username,
+            mes,
+            ingresoEsperado,
+            egresoEsperado
+        }).then(() => {
+            loadPresupuestos();
+            updateDashboardSummary();
+            presupuestoForm.reset();
+        });
+    };
+}
+
+// Mostrar presupuestos en la tabla
+function loadPresupuestos() {
+    const mes = document.querySelector('#budgets input[type="month"]')?.value || '';
+    if (!currentUser || !mes) return;
+    window.getPresupuestosByUserAndMonth(currentUser.username, mes).then(presupuestos => {
+        const tbody = document.querySelector('#budgets table tbody');
+        tbody.innerHTML = '';
+        if (!presupuestos.length) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">Sin presupuestos para este mes</td></tr>`;
+            return;
+        }
+        presupuestos.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${mesToString(p.mes)}</td>
+                <td>
+                    <input type="number" value="${p.ingresoEsperado || 0}" style="width:80px;" class="edit-ingreso" />
+                </td>
+                <td>
+                    <input type="number" value="${p.egresoEsperado || 0}" style="width:80px;" class="edit-egreso" />
+                </td>
+                <td>
+                    <button class="save-presupuesto" data-id="${p.id}">Guardar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            tr.querySelector('.save-presupuesto').onclick = function() {
+                const nuevoIngreso = parseFloat(tr.querySelector('.edit-ingreso').value);
+                const nuevoEgreso = parseFloat(tr.querySelector('.edit-egreso').value);
+                // Asegúrate de pasar el id si existe
+                const presupuestoActualizado = {
+                    ...p,
+                    ingresoEsperado: nuevoIngreso,
+                    egresoEsperado: nuevoEgreso
+                };
+                if (p.id) presupuestoActualizado.id = p.id;
+                window.addPresupuesto(presupuestoActualizado).then(() => {
+                    loadPresupuestos();
+                    updateDashboardSummary();
+                });
+            };
+        });
+    });
+}
+
+// Utilidad para mostrar el mes en texto
+function mesToString(mes) {
+    const [y, m] = mes.split('-');
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    return `${meses[parseInt(m)-1]} ${y}`;
+}
+
+// Cargar presupuestos al cambiar el mes
+const presupuestoMesInput = document.querySelector('#budgets input[type="month"]');
+if (presupuestoMesInput) {
+    presupuestoMesInput.addEventListener('change', loadPresupuestos);
+}
+
+// Actualizar dashboard con los datos del presupuesto
+function updateDashboardSummary() {
+    const monthInput = document.getElementById('monthFilter');
+    let mes = '';
+    if (monthInput && monthInput.value) {
+        mes = monthInput.value;
+    } else {
+        const now = new Date();
+        mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }
+    if (!currentUser) return;
+    window.getPresupuestosByUserAndMonth(currentUser.username, mes).then(presupuestos => {
+        let ingreso = 0;
+        let egreso = 0;
+        presupuestos.forEach(p => {
+            ingreso += Number(p.ingresoEsperado) || 0;
+            egreso += Number(p.egresoEsperado) || 0;
+        });
+        const balance = ingreso - egreso;
+        const summaryItems = document.querySelectorAll('.summary-item span');
+        if (summaryItems.length >= 3) {
+            summaryItems[0].textContent = `$${ingreso}`;
+            summaryItems[1].textContent = `$${egreso}`;
+            summaryItems[2].textContent = `$${balance}`;
+        }
+    });
+}
+
+// Actualizar dashboard al cambiar el mes
+const monthInput = document.getElementById('monthFilter');
+if (monthInput) {
+    monthInput.addEventListener('change', updateDashboardSummary);
+}
+
+// Llama a updateDashboardSummary al cargar la página
+document.addEventListener('DOMContentLoaded', updateDashboardSummary);
+
+// indexeddb.js
+request.onupgradeneeded = function(event) {
+    db = event.target.result;
+    if (!db.objectStoreNames.contains("presupuestos")) {
+        db.createObjectStore("presupuestos", { keyPath: "id", autoIncrement: true });
+    }
+    // ...
+};

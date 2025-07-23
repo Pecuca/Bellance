@@ -56,20 +56,17 @@
       </div>
     </aside>
     <div class="container">
-      <header>
-        <p>Controla tus ingresos, gastos y presupuestos de manera sencilla.</p>
-      </header>
       <main>
       <section id="dashboard" class="view-section">
-        <h2>¡Bienvenido a tu Dashboard!</h2>
-        <p style="color:#8b949e; margin-bottom:32px;">Aquí verás un resumen de tu situación financiera y accesos rápidos a tus funciones principales.</p>
+        <h2>Dashboard</h2>
+        <p style="color: #455c53; margin-bottom:32px;">Aquí verás un resumen de tu situación financiera y accesos rápidos a tus funciones principales.</p>
         <div class="summary-box">
           <div class="summary-item">
             <span>$2,500</span>
             Ingresos
           </div>
           <div class="summary-item">
-            <span>$1,200</span>
+            <span>$1200</span>
             Gastos
           </div>
           <div class="summary-item">
@@ -80,39 +77,39 @@
         <div>
           <h2>Visualización de Finanzas</h2>
           <div style="margin-bottom:16px;">
-            <label for="chartType" style="font-weight:bold;">Tipo de gráfica:</label>
-            <select id="chartType" style="margin-left:8px; margin-right:16px;">
-              <option value="gastosCategoria">Gastos por categoría del mes (Dona)</option>
-              <option value="balanceMensual">Balance real vs estimado (Líneas)</option>
-              <option value="ingresosComparativo">Ingresos estimados vs reales (Barras)</option>
-              <option value="evolucionBalance">Evolución del balance mensual (Líneas)</option>
-              <option value="distribucionGastosIngresos">Distribución de gastos vs ingresos (Barras)</option>
+            <label for="chartType" style="color: #455c53; margin-left: 20px;">Tipo de gráfica:</label>
+            <select id="chartType" class="chart-select">
+              <option value="gastosCategoria">Gastos por Categoría</option>
+              <option value="balanceMensual">Balance Mensual</option>
+              <option value="ingresosComparativo">Ingresos Comparativo</option>
+              <option value="evolucionBalance">Evolución Balance</option>
+              <option value="distribucionGastosIngresos">Distribución Gastos/Ingresos</option>
             </select>
-            <label for="monthFilter" style="font-weight:bold;">Mes:</label>
-            <input type="month" id="monthFilter" style="margin-left:8px;" />
+            <label for="monthFilter" style="color: #455c53; margin-left: 75px;">Mes:</label>
+            <input type="month" id="monthFilter" class="chart-select">
           </div>
-          <div style="background:#22272e; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(20,23,28,0.10);">
+          <div style="background:#f8f6e8; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(20,23,28,0.10);">
             <canvas id="finanzasChart" width="600" height="300"></canvas>
           </div>
         </div>
       </section>
       <section id="transactions" class="view-section" style="display:none;">
         <h2>Transacciones</h2>
-        <form id="transForm" style="margin-bottom:18px;">
+        <form id="transForm" style="margin-bottom:18px;" class="form-transferencias">
             <label>Tipo</label>
-            <select required>
+            <select required class="chart-select">
                 <option value="Ingreso">Ingreso</option>
                 <option value="Egreso">Egreso</option>
             </select>
             <label>Monto</label>
-            <input type="number" required min="1" placeholder="Monto" />
+            <input type="number" required min="1" placeholder="Monto" class="chart-select"/>
             <label>Fecha</label>
-            <input type="date" required />
+            <input type="date" required class="chart-select"/>
             <label>Categoría</label>
-            <input type="text" required placeholder="Categoría" />
+            <input type="text" required placeholder="Categoría" class="chart-select"/>
             <label>Descripción</label>
-            <input type="text" placeholder="Descripción" />
-            <button type="submit">Registrar</button>
+            <input type="text" placeholder="Descripción" class="chart-select"/>
+            <button type="submit" class="btn">Registrar</button>
         </form>
         <table id="transTable">
             <thead>
@@ -125,17 +122,16 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Aquí se llenan las filas dinámicamente -->
             </tbody>
         </table>
       </section>
       <section id="categories" class="view-section" style="display:none;">
         <h2>Categorías</h2>
-        <form id="catForm" style="margin-bottom:18px;">
-            <input type="text" required placeholder="Nombre de la categoría" />
-            <button type="submit">Agregar</button>
+        <form id="catForm" style="margin-bottom:16px;">
+          <input type="text" placeholder="Nombre de la categoría" required class="chart-select"/>
+          <button type="submit" class="categorias-btn">Agregar</button>
         </form>
-        <ul></ul>
+        <ul style="list-style:none; padding:0; margin:0;"></ul>
       </section>
       <section id="budgets" class="view-section" style="display:none;">
         <h2>Configuración de Presupuestos</h2>
@@ -143,39 +139,25 @@
           <thead>
             <tr>
               <th>Mes</th>
-              <th>Categoría</th>
-              <th>Presupuesto Estimado</th>
-              <th>Gasto Real</th>
-              <th>Desviación</th>
+              <th>Ingreso Esperado</th>
+              <th>Egreso Esperado</th>
+              <th>Acción</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Julio 2025</td>
-              <td>Alimentación</td>
-              <td>$300</td>
-              <td>$250</td>
-              <td>+50</td>
-            </tr>
-            <tr>
-              <td>Julio 2025</td>
-              <td>Transporte</td>
-              <td>$100</td>
-              <td>$120</td>
-              <td>-20</td>
-            </tr>
+            <!-- Aquí se llenará dinámicamente -->
           </tbody>
         </table>
         <div class="form-demo">
           <h2>Configurar Presupuesto</h2>
-          <form>
+          <form id="presupuestoForm">
             <label>Mes</label>
-            <input type="month" />
-            <label>Categoría</label>
-            <input type="text" placeholder="Categoría" />
-            <label>Monto estimado</label>
-            <input type="number" placeholder="Monto" />
-            <button type="submit">Guardar</button>
+            <input type="month" required />
+            <label>Ingreso esperado</label>
+            <input type="number" placeholder="Ingreso esperado" required />
+            <label>Egreso esperado</label>
+            <input type="number" placeholder="Egreso esperado" required />
+            <button type="submit" class="btn">Guardar</button>
           </form>
         </div>
       </section>

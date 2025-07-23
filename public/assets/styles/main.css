@@ -79,8 +79,7 @@
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 .sidebar-btn:hover {
-    background: #30363d;
-    color: #58a6ff;
+    background: #096c80;
 }
 .sidebar-btn.logout {
     background: #ea4661;
@@ -108,6 +107,11 @@
     box-shadow: 2px 0 16px rgba(20,23,28,0.10);
     padding: 0;
     z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 220px;
 }
 .sidebar-header {
     padding: 12px 0 18px 0;
@@ -197,10 +201,14 @@ body {
     max-width: 900px;
     margin: 40px auto;
     background: #abd7c7;
+    border: 8px solid #91c2b3;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(20, 23, 28, 0.25);
     padding: 36px 32px;
+    position: relative;
+    left: 7.5%;
 }
+
 header h1 {
     font-size: 2.3rem;
     color: #58a6ff;
@@ -211,6 +219,24 @@ header p {
     color: #8b949e;
     font-size: 1.1rem;
 }
+
+.chart-select {
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    background: #f6ece0;
+    color: #5f5b53;
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+
+.chart-select{
+    padding: 8px;
+    border-radius: 6px;
+    margin-right: 16px;
+    font-family: 'nintendoP_Humming-E_002pr', Arial, sans-serif;
+}
+
 nav {
     display: flex;
     justify-content: center;
@@ -227,16 +253,16 @@ nav a {
 }
 
 h2 {
-    color: #58a6ff;
-    margin-bottom: 10px;
-    font-size: 1.3rem;
+    color: #455c53;
+    margin-top: 0px;
+    font-size: 1.4rem;
     font-weight: 600;
 }
 section {
     margin-bottom: 32px;
 }
 .form-demo {
-    background: #21262d;
+    background: #ece5cd;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 18px;
@@ -246,7 +272,7 @@ section {
     display: block;
     margin-bottom: 6px;
     font-weight: 500;
-    color: #e1e4e8;
+    color: #695f53;
 }
 .form-demo input, .form-demo select {
     width: 100%;
@@ -254,23 +280,65 @@ section {
     margin-bottom: 14px;
     border-radius: 6px;
     border: 1px solid #30363d;
-    background: #161b22;
-    color: #e1e4e8;
+    background: #f8f6e8;
+    color: #695f53;
     font-size: 1rem;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 .form-demo button {
-    background: #238636;
-    color: #fff;
-    border: none;
-    padding: 10px 28px;
+      background: #075665;
+    color: #e1e4e8;
     border-radius: 8px;
-    font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(20,23,28,0.08);
+    margin-bottom: 30px;
+    border-color: #075665;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 23px;
+    box-shadow: 0px 4px #053d47;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 .form-demo button:hover {
-    background: #2ea043;
+    background: #096c80;
 }
+
+.form-transferencias {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #3b5a4e;
+}
+
+.btn {
+     background: #075665;
+    color: #e1e4e8;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 30px;
+    border-color: #075665;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 23px;
+    box-shadow: 0px 4px #053d47;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+}
+
+.categorias-btn {
+    background: #075665;
+    color: #e1e4e8;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-color: #075665;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 23px;
+    box-shadow: 0px 4px #053d47;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -286,12 +354,13 @@ th, td {
     text-align: left;
 }
 th {
-    background: #161b22;
-    color: #58a6ff;
-    font-weight: 600;
+    background: #ece5cd;
+    color: #656056;
 }
 tr:last-child td {
     border-bottom: none;
+    background-color: #f8f6e8;
+    color: #656056;
 }
 ul {
     padding-left: 18px;
@@ -315,25 +384,26 @@ li button:hover {
     color: #fff;
 }
 .summary-box {
-    background: #21262d;
+    background: #ebe6c8;
     border-radius: 10px;
     padding: 18px;
     margin-bottom: 18px;
     display: flex;
     gap: 40px;
     justify-content: space-around;
-    border: 1px solid #30363d;
+    border: none;
 }
 .summary-item {
     text-align: center;
+    color: #665b48;
 }
 .summary-item span {
     display: block;
     font-size: 1.3rem;
     font-weight: bold;
-    color: #58a6ff;
+    color: #665b48;
 }
-/* img removed */
+
 footer {
     text-align: center;
     color: #8b949e;

@@ -23,6 +23,12 @@ request.onupgradeneeded = function(event) {
         catStore.createIndex("username", "username", { unique: false });
         catStore.createIndex("nombre", "nombre", { unique: false });
     }
+    // Crear almacén de presupuestos si no existe
+    if (!db.objectStoreNames.contains("presupuestos")) {
+        const store = db.createObjectStore("presupuestos", { keyPath: "id", autoIncrement: true });
+        store.createIndex("username", "username", { unique: false });
+        store.createIndex("mes_categoria", ["username", "mes", "categoria"], { unique: true });
+    }
 };
 
 request.onsuccess = function(event) {
@@ -121,5 +127,31 @@ window.updateCategoria = function(categoria) {
         const req = store.put(categoria);
         req.onsuccess = () => resolve();
         req.onerror = (e) => reject(e);
+    });
+};
+
+// Agregar presupuesto
+window.addPresupuesto = function(presupuesto) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("presupuestos", "readwrite");
+        const store = tx.objectStore("presupuestos");
+        store.put(presupuesto);
+        tx.oncomplete = () => resolve();
+        tx.onerror = e => reject(e);
+    });
+};
+
+// Obtener presupuestos por usuario y mes
+window.getPresupuestosByUserAndMonth = function(username, mes) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction("presupuestos", "readonly");
+        const store = tx.objectStore("presupuestos");
+        const index = store.index("username");
+        const req = index.getAll(username);
+        req.onsuccess = () => {
+            const presupuestos = req.result.filter(p => p.mes === mes);
+            resolve(presupuestos);
+        };
+        req.onerror = e => reject(e);
     });
 };
