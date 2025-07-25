@@ -233,6 +233,50 @@ window.getAllPresupuestosByUser = withDBReady(function(username) {
     });
 });
 
+// Actualizar presupuesto por id
+window.updatePresupuesto = function(presupuesto) {
+    return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open('finanzasDB');
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const tx = db.transaction('presupuestos', 'readwrite');
+            const store = tx.objectStore('presupuestos');
+            const putReq = store.put(presupuesto);
+            putReq.onsuccess = function() {
+                resolve();
+            };
+            putReq.onerror = function(e) {
+                reject(e);
+            };
+        };
+        request.onerror = function(e) {
+            reject(e);
+        };
+    });
+};
+
+// Eliminar presupuesto por id
+window.deletePresupuesto = function(id) {
+    return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open('finanzasDB');
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const tx = db.transaction('presupuestos', 'readwrite');
+            const store = tx.objectStore('presupuestos');
+            const delReq = store.delete(id);
+            delReq.onsuccess = function() {
+                resolve();
+            };
+            delReq.onerror = function(e) {
+                reject(e);
+            };
+        };
+        request.onerror = function(e) {
+            reject(e);
+        };
+    });
+};
+
 if (!window.indexedDB) {
     console.error("Este navegador no soporta IndexedDB.");
 }
