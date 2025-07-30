@@ -65,22 +65,17 @@
     gap: 12px;
 }  
 .sidebar-btn {
-    background: #075665;
-    color: #e1e4e8;
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
     margin-bottom: 2px;
-    border-color: #075665;
     border: none;
     padding: 10px 25px;
     border-radius: 23px;
-    box-shadow: 0px 4px #053d47;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
-.sidebar-btn:hover {
-    background: #096c80;
-}
+
+
 .sidebar-btn.logout {
     background: #ea4661;
     color: #e1e4e8;
@@ -89,11 +84,10 @@
     padding: 10px 25px;
 }
 .sidebar-btn.logout:hover {
-    background: #ff7675;
-    color: #fff;
+    background: #b9384e;
+    box-shadow: 0px 4px #84202e;
 }
 
-/* Botón de ajustes en el sidebar */
 #sidebarSettingsBtn,
 .sidebar-btn#sidebarSettingsBtn {
     background: #ffdc8a;
@@ -102,7 +96,7 @@
     border-radius: 23px;
     font-size: 1rem;
     cursor: pointer;
-    padding: 10px 25px;
+    padding: 10px 18px;
     margin-bottom: 2px;
     box-shadow: 0px 4px #bba266;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
@@ -110,14 +104,19 @@
     letter-spacing: 0.2px;
     transition: background 0.2s, color 0.2s;
     display: block;
-    width: 100%;
+    width: 75%;
     text-align: center;
 }
 
 #sidebarSettingsBtn:hover,
 .sidebar-btn#sidebarSettingsBtn:hover {
-    background: #1b987f;
-    color: #fff;
+    background: #d9bb75;
+    box-shadow: 0px 4px #927e50;
+}
+
+#sidebarSettingsBtn:active,
+.sidebar-btn#sidebarSettingsBtn:active {
+
 }
 
 .layout {
@@ -141,7 +140,7 @@
     width: 220px;
 }
 .sidebar-header {
-    padding: 50px 0 18px 0;
+    padding: 18px 0 18px 0;
     text-align: center;
     border-bottom: 1px solid #39a19e;
 }
@@ -312,22 +311,39 @@ section {
     font-size: 1rem;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
-.form-demo button {
-      background: #075665;
-    color: #e1e4e8;
+.button {
+      background: #ffdc8a;
+    color: #5c4434;
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
     margin-bottom: 30px;
-    border-color: #075665;
+    border-color: #c3b88a;
     border: none;
     padding: 10px 25px;
     border-radius: 23px;
-    box-shadow: 0px 4px #053d47;
+    box-shadow: 0px 4px #bba266;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
+
+.form-demo button {
+    background: #ffdc8a;
+    color: #5c4434;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-color: #c3b88a;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 23px;
+    box-shadow: 0px 4px #bba266;
+    font-weight: 600;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+}
+
 .form-demo button:hover {
-    background: #096c80;
+    background: #d9bb75;
+    box-shadow: 0px 4px #927e50;
 }
 
 .form-transferencias {
@@ -352,6 +368,15 @@ section {
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 
+.btn:hover {
+    background: #053a45;
+    box-shadow: 0px 4px #032930;
+}
+
+.cat-name {
+    color: #455c53;
+}
+
 .categorias-btn {
     background: #075665;
     color: #e1e4e8;
@@ -364,6 +389,11 @@ section {
     border-radius: 23px;
     box-shadow: 0px 4px #053d47;
     font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+}
+
+.categorias-btn:hover {
+    background: #053a45;
+    box-shadow: 0px 4px #032930;
 }
 
 table {
@@ -410,8 +440,8 @@ li button:hover {
     background: #30363d;
     color: #fff;
 }
-li button.edit-cat-btn {
-    background: #58a6ff;
+li button.edit--btn {
+    background: #075665;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -420,28 +450,48 @@ li button.edit-cat-btn {
     font-size: 0.95rem;
     cursor: pointer;
     transition: background 0.2s;
-    box-shadow: 0 2px #2f86c0;
+    box-shadow: 0 2px #053d47;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 li button.edit-cat-btn:hover {
-    background: #1b987f;
-    color: #fff;
+    background: #053a45;
+    box-shadow: 0px 4px #032930;
 }
 
 li button.delete-cat-btn {
     background: #ea4661;
-    color: #fff;
-    border: none;
+    color: #e1e4e8;
+    box-shadow: 0px 4px #a02838;
     border-radius: 8px;
-    padding: 4px 16px;
-    margin-left: 6px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s;
-    box-shadow: 0 2px #a02838;
+    border-color: #ea4661;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 23px;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
 }
 li button.delete-cat-btn:hover {
-    background: #ff7675;
-    color: #fff;
+    background: #b9384e;
+}
+
+.edit-cat-btn {
+    background: #075665;
+    color: #e1e4e8;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-color: #075665;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 23px;
+    box-shadow: 0px 4px #053d47;
+    font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+}
+
+.edit-cat-btn:hover {
+    background: #053a45;
+     box-shadow: 0px 4px #032930;
 }
 
 .summary-box {
@@ -571,8 +621,8 @@ footer {
   transition: background 0.2s, color 0.2s;
 }
 .login-btn:hover {
-    background: #1b987f;
-    color: #fff;
+    background: #d9bb75;
+    box-shadow: 0px 4px #927e50;
 }
 .register-btn {
   background: #ffdc8a;
@@ -584,6 +634,11 @@ footer {
   cursor: pointer;
   box-shadow: 0px 4px #c3b88a;
   font-family: nintendoP_Humming-E_002pr, Arial, sans-serif;
+}
+
+.register-btn:hover {
+    background: #d9bb75;
+    box-shadow: 0px 4px #927e50;
 }
 
 .register-form {
