@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         transacciones = trs;
                         renderChart(chartTypeSelect.value); // Actualiza los gráficos con los datos reales
                         renderTransTable(); // Renderiza la tabla de transacciones
+                        updateDashboardSummary(); // <-- Añadido: actualiza el dashboard con los datos cargados
                     });
 
                     // Nuevo: Cargar categorías del usuario
@@ -124,6 +125,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target === settingsModal) settingsModal.style.display = 'none';
         });
     }
+
+    // --- AGREGADO: Cargar presupuestos al iniciar sesión ---
+    // Esto asegura que la tabla de presupuestos se cargue al iniciar sesión, aunque no se registre un presupuesto nuevo.
+    if (mainLayout) {
+        // Espera a que el usuario haya hecho login y mainLayout esté visible
+        const observer = new MutationObserver(() => {
+            if (mainLayout.style.display !== 'none') {
+                loadPresupuestosMesConfigTable();
+                observer.disconnect();
+            }
+        });
+        observer.observe(mainLayout, { attributes: true, attributeFilter: ['style'] });
+    }
 });
 // Navegación de vistas del layout
 const navLinks = document.querySelectorAll('.sidebar-nav a');
@@ -170,6 +184,19 @@ if (toggleTransForm && sidebarTransForm) {
     };
 }
 
+// --- Moneda global ---
+let currentCurrency = localStorage.getItem('bellance_currency') || 'USD';
+function getCurrencySymbol() {
+    switch (currentCurrency) {
+        case 'USD': return '$';
+        case 'EUR': return '€';
+        case 'UYU': return '$U';
+        case 'MXN': return '$';
+        case 'VES': return 'Bs';
+        default: return '$';
+    }
+}
+
 // Chart.js: Finanzas
 const chartTypeSelect = document.getElementById('chartType');
 const chartCanvas = document.getElementById('finanzasChart');
@@ -188,23 +215,32 @@ function getMonthString(date) {
 
 function getFilteredTransacciones(month) {
     if (!month) return transacciones;
-    return transacciones.filter(t => getMonthString(t.fecha) === month);
+    // Si el mes tiene formato YYYY-MM, filtra por ese mes
+    // Si el mes tiene formato YYYY-MM-DD, filtra solo ese día
+    if (/^\d{4}-\d{2}$/.test(month)) {
+        return transacciones.filter(t => getMonthString(t.fecha) === month);
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(month)) {
+        return transacciones.filter(t => t.fecha === month);
+    }
+    return transacciones;
 }
 
-function getGastosPorCategoriaFiltrado(month) {
-    const cats = ['Alimentación', 'Transporte', 'Ocio', 'Servicios', 'Salud', 'Educación', 'Otros'];
-    const filtered = getFilteredTransacciones(month).filter(t => t.tipo === 'Egreso');
-    // Solo incluye categorías con gasto > 0
-    const result = cats.map(cat => {
-        const total = filtered.filter(t => t.categoria === cat).reduce((sum, t) => sum + t.monto, 0);
-        return { cat, total };
-    }).filter(item => item.total > 0);
-    return {
-        labels: result.map(item => item.cat),
-        data: result.map(item => item.total)
-    };
+// --- NUEVO: Modo de filtro para gráficos ---
+let chartMonthMode = true; // true: vista anual (por mes), false: vista mensual (por día)
+
+if (monthFilter) {
+    // Cambia el tipo de filtro según si el usuario selecciona un mes o no
+    monthFilter.addEventListener('change', function() {
+        if (monthFilter.value) {
+            chartMonthMode = false; // Mostrar por días del mes seleccionado
+        } else {
+            chartMonthMode = true; // Mostrar por meses del año
+        }
+        renderChart(chartTypeSelect.value);
+    });
 }
 
+// --- Modifica los gráficos para soportar ambos modos ---
 const chartData = {
     gastosCategoria: function(month) {
         const gastos = getGastosPorCategoriaFiltrado(month);
@@ -379,10 +415,64 @@ const chartData = {
             },
             options: {responsive: true, plugins: {legend: {display: false}}}
         };
+    },
+    // NUEVO: gráfico de líneas por días del mes seleccionado (balance real por día)
+    ingresosEgresosPorDia: function(month) {
+        if (!month) return chartData.gastosCategoria();
+        const [year, mes] = month.split('-');
+        const diasEnMes = new Date(year, mes, 0).getDate();
+        const labels = [];
+        for (let d = 1; d <= diasEnMes; d++) {
+            labels.push(`${year}-${mes}-${String(d).padStart(2, '0')}`);
+        }
+        // Calcula el balance real por día (ingresos - egresos)
+        const balancePorDia = labels.map(dia => {
+            const ingresos = getFilteredTransacciones(dia)
+                .filter(t => t.tipo === 'Ingreso')
+                .reduce((sum, t) => sum + Number(t.monto), 0);
+            const egresos = getFilteredTransacciones(dia)
+                .filter(t => t.tipo === 'Egreso')
+                .reduce((sum, t) => sum + Number(t.monto), 0);
+            return ingresos - egresos;
+        });
+        return {
+            type: 'line',
+            data: {
+                labels: labels.map(d => d.slice(8)), // solo día
+                datasets: [
+                    {
+                        label: 'Balance Real',
+                        data: balancePorDia,
+                        borderColor: '#58a6ff',
+                        backgroundColor: 'rgba(88,166,255,0.08)',
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {legend: {position: 'bottom'}}
+            }
+        };
     }
 };
 
-// Modifica renderChart para soportar promesas en los gráficos dinámicos
+// Asegúrate de que esta función esté definida antes de chartData:
+function getGastosPorCategoriaFiltrado(month) {
+    const cats = ['Alimentación', 'Transporte', 'Ocio', 'Servicios', 'Salud', 'Educación', 'Otros'];
+    const filtered = getFilteredTransacciones(month).filter(t => t.tipo === 'Egreso');
+    // Solo incluye categorías con gasto > 0
+    const result = cats.map(cat => {
+        const total = filtered.filter(t => t.categoria === cat).reduce((sum, t) => sum + t.monto, 0);
+        return { cat, total };
+    }).filter(item => item.total > 0);
+    return {
+        labels: result.map(item => item.cat),
+        data: result.map(item => item.total)
+    };
+}
+
+// --- Modifica renderChart para elegir el gráfico correcto según el modo ---
 function renderChart(type) {
     if (!chartCanvas) return;
     if (finanzasChart) {
@@ -391,9 +481,15 @@ function renderChart(type) {
     let configFn = chartData[type];
     const month = monthFilter ? monthFilter.value : '';
     let configPromise;
+
+    // Si está en modo mensual y el gráfico es de gastosCategoria, balanceMensual, ingresosComparativo o evolucionBalance,
+    // muestra ingresos y egresos reales por día en gráfico de líneas
+    if (!chartMonthMode && (type === "gastosCategoria" || type === "balanceMensual" || type === "ingresosComparativo" || type === "evolucionBalance")) {
+        configFn = chartData.ingresosEgresosPorDia;
+    }
+
     if (typeof configFn === 'function') {
-        // Si la función devuelve una promesa, espera a que se resuelva
-        const result = configFn(type === "gastosCategoria" || type === "distribucionGastosIngresos" ? month : undefined);
+        const result = configFn(!chartMonthMode ? month : undefined);
         if (result && typeof result.then === "function") {
             configPromise = result;
         } else {
@@ -403,6 +499,28 @@ function renderChart(type) {
         configPromise = Promise.resolve(configFn);
     }
     configPromise.then(config => {
+        // Modifica los labels de los montos para incluir el símbolo de moneda
+        if (config && config.data && config.data.datasets) {
+            const symbol = getCurrencySymbol();
+            // Para gráficos de barras y líneas, modifica los tooltips/callbacks
+            if (!config.options.plugins) config.options.plugins = {};
+            config.options.plugins.tooltip = config.options.plugins.tooltip || {};
+            config.options.plugins.tooltip.callbacks = config.options.plugins.tooltip.callbacks || {};
+            config.options.plugins.tooltip.callbacks.label = function(context) {
+                let label = context.dataset.label || '';
+                if (label) label += ': ';
+                label += symbol + context.parsed.y;
+                return label;
+            };
+            // Para gráficos de doughnut, modifica datalabels
+            if (config.plugins && config.plugins.includes(ChartDataLabels)) {
+                config.options.plugins.datalabels = config.options.plugins.datalabels || {};
+                config.options.plugins.datalabels.formatter = function(value, context) {
+                    const label = context.chart.data.labels[context.dataIndex];
+                    return label + "\n" + symbol + value;
+                };
+            }
+        }
         finanzasChart = new Chart(chartCanvas, config);
     });
 }
@@ -455,13 +573,14 @@ function renderTransTable() {
         tbody.appendChild(tr);
         return;
     }
+    const symbol = getCurrencySymbol();
     transacciones.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${t.fecha}</td>
             <td>${t.tipo}</td>
             <td>${t.categoria}</td>
-            <td>${t.monto}</td>
+            <td>${symbol}${t.monto}</td>
             <td>${t.descripcion || ''}</td>
         `;
         tbody.appendChild(tr);
@@ -634,30 +753,57 @@ if (changePassForm) {
 
 // Cambiar formato de moneda
 if (currencyFormat) {
+    // Inicializar select con la moneda guardada
+    currencyFormat.value = currentCurrency;
     currencyFormat.onchange = function() {
-        // Aquí puedes guardar la preferencia en localStorage o IndexedDB
-        settingsMsg.textContent = 'Formato de moneda actualizado (demo)';
+        currentCurrency = currencyFormat.value;
+        localStorage.setItem('bellance_currency', currentCurrency);
+        settingsMsg.textContent = 'Formato de moneda actualizado';
         settingsMsg.style.display = 'block';
         setTimeout(() => settingsMsg.style.display = 'none', 2000);
+        // Actualizar UI
+        updateDashboardSummary();
+        renderTransTable();
+        loadPresupuestosMesConfigTable();
+        renderChart(chartTypeSelect.value);
     };
 }
 
 // Eliminar cuenta
 if (deleteAccountBtn) {
     deleteAccountBtn.onclick = function() {
-        if (confirm('¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) {
-            // Aquí deberías borrar el usuario de IndexedDB y cerrar sesión
-            settingsMsg.textContent = 'Cuenta eliminada (demo)';
-            settingsMsg.style.display = 'block';
-            setTimeout(() => {
-                settingsModal.style.display = 'none';
-                // Simular logout
-                document.querySelector('.layout').style.display = 'none';
-                document.getElementById('loginView').style.display = 'flex';
-            }, 1500);
-        }
+        // Mostrar modal personalizado en vez de confirm()
+        openDeleteAccountModal();
     };
 }
+
+// --- Modal de confirmación para eliminar cuenta ---
+const deleteAccountModal = document.getElementById('deleteAccountModal');
+const deleteAccountConfirm = document.getElementById('deleteAccountConfirm');
+const deleteAccountCancel = document.getElementById('deleteAccountCancel');
+
+function openDeleteAccountModal() {
+    if (deleteAccountModal) deleteAccountModal.style.display = 'flex';
+}
+function closeDeleteAccountModal() {
+    if (deleteAccountModal) deleteAccountModal.style.display = 'none';
+}
+if (deleteAccountCancel) deleteAccountCancel.onclick = closeDeleteAccountModal;
+if (deleteAccountConfirm) {
+    deleteAccountConfirm.onclick = function() {
+        // Aquí deberías borrar el usuario de IndexedDB y cerrar sesión
+        settingsMsg.textContent = 'Cuenta eliminada (demo)';
+        settingsMsg.style.display = 'block';
+        closeDeleteAccountModal();
+        setTimeout(() => {
+            settingsModal.style.display = 'none';
+            // Simular logout
+            document.querySelector('.layout').style.display = 'none';
+            document.getElementById('loginView').style.display = 'flex';
+        }, 1500);
+    };
+}
+
 // --- FIN AJUSTES ---
 // --- PRESUPUESTOS ---
 
@@ -688,22 +834,138 @@ function loadPresupuestosMesConfigTable() {
     window.getAllPresupuestosByUser(currentUser).then(presupuestos => {
         presupuestos.sort((a, b) => (a.mes < b.mes ? 1 : -1));
         const tbody = document.querySelector("#presupuestosMesConfigTable tbody");
+        const thead = document.querySelector("#presupuestosMesConfigTable thead tr");
         if (!tbody) return;
         tbody.innerHTML = "";
+
+        // --- AGREGADO: Añadir columna "Acción" si no existe ---
+        if (thead && !Array.from(thead.children).some(th => th.textContent.trim().toLowerCase() === 'Acción')) {
+            const newHeader = document.createElement('th');
+            newHeader.textContent = 'Acción';
+            thead.appendChild(newHeader);
+        }
+
         if (!presupuestos.length) {
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#888;">Sin presupuestos registrados</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">Sin presupuestos registrados</td></tr>`;
             return;
         }
+        const symbol = getCurrencySymbol();
         presupuestos.forEach(p => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${mesToString(p.mes)}</td>
-                <td>$${p.ingresoEsperado || 0}</td>
-                <td>$${p.egresoEsperado || 0}</td>
+                <td>${symbol}${p.ingresoEsperado || 0}</td>
+                <td>${symbol}${p.egresoEsperado || 0}</td>
+                <td>
+                    <button class="edit-budget-btn" data-id="${p.id}" style="background:#58a6ff;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;margin-right:6px;">Editar</button>
+                    <button class="delete-budget-btn" data-id="${p.id}" style="background:#ea4661;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">Eliminar</button>
+                </td>
             `;
             tbody.appendChild(tr);
+
+            // Editar presupuesto
+            tr.querySelector('.edit-budget-btn').onclick = function() {
+                openEditBudgetModal(p);
+            };
+
+            // Eliminar presupuesto
+            tr.querySelector('.delete-budget-btn').onclick = function() {
+                openDeleteBudgetModal(p);
+            };
         });
     });
+}
+
+// --- Modal para editar presupuesto ---
+function openEditBudgetModal(presupuesto) {
+    // Crea el modal si no existe
+    let modal = document.getElementById('editBudgetModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editBudgetModal';
+        modal.className = 'global-msg';
+        modal.style.display = 'flex';
+        modal.style.flexDirection = 'column';
+        modal.style.alignItems = 'center';
+        modal.style.maxWidth = '340px';
+        modal.innerHTML = `
+            <span style="margin-bottom:16px;">Editar presupuesto de <b id="editBudgetMes"></b></span>
+            <form id="editBudgetForm" style="display:flex;flex-direction:column;gap:10px;width:100%;">
+                <label>Ingreso esperado</label>
+                <input type="number" id="editIngresoEsperado" required min="0" style="padding:6px;border-radius:6px;">
+                <label>Egreso esperado</label>
+                <input type="number" id="editEgresoEsperado" required min="0" style="padding:6px;border-radius:6px;">
+                <div style="display:flex;gap:12px;justify-content:center;margin-top:10px;">
+                    <button type="submit" class="btn" style="background:#58a6ff;">Guardar</button>
+                    <button type="button" id="editBudgetCancel" class="btn" style="background:#39a19e;">Cancelar</button>
+                </div>
+            </form>
+        `;
+        document.body.appendChild(modal);
+    }
+    // Set values
+    modal.querySelector('#editBudgetMes').textContent = mesToString(presupuesto.mes);
+    modal.querySelector('#editIngresoEsperado').value = presupuesto.ingresoEsperado;
+    modal.querySelector('#editEgresoEsperado').value = presupuesto.egresoEsperado;
+    modal.style.display = 'flex';
+
+    // Cancelar
+    modal.querySelector('#editBudgetCancel').onclick = function() {
+        modal.style.display = 'none';
+    };
+
+    // Guardar
+    modal.querySelector('#editBudgetForm').onsubmit = function(e) {
+        e.preventDefault();
+        const ingresoEsperado = parseFloat(modal.querySelector('#editIngresoEsperado').value);
+        const egresoEsperado = parseFloat(modal.querySelector('#editEgresoEsperado').value);
+        window.updatePresupuesto({
+            ...presupuesto,
+            ingresoEsperado,
+            egresoEsperado
+        }).then(() => {
+            modal.style.display = 'none';
+            refreshBudgetsTablesAndDashboard();
+        });
+    };
+}
+
+// --- Modal para eliminar presupuesto ---
+function openDeleteBudgetModal(presupuesto) {
+    // Crea el modal si no existe
+    let modal = document.getElementById('deleteBudgetModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'deleteBudgetModal';
+        modal.className = 'global-msg';
+        modal.style.display = 'flex';
+        modal.style.flexDirection = 'column';
+        modal.style.alignItems = 'center';
+        modal.style.maxWidth = '340px';
+        modal.innerHTML = `
+            <span id="deleteBudgetMsg" style="margin-bottom:16px;"></span>
+            <div style="display:flex; gap:16px;">
+                <button id="deleteBudgetConfirm" class="btn" style="background:#ea4661;">Eliminar</button>
+                <button id="deleteBudgetCancel" class="btn" style="background:#39a19e;">Cancelar</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    modal.querySelector('#deleteBudgetMsg').textContent = `¿Seguro que deseas eliminar el presupuesto de ${mesToString(presupuesto.mes)}?`;
+    modal.style.display = 'flex';
+
+    // Cancelar
+    modal.querySelector('#deleteBudgetCancel').onclick = function() {
+        modal.style.display = 'none';
+    };
+
+    // Confirmar
+    modal.querySelector('#deleteBudgetConfirm').onclick = function() {
+        window.deletePresupuesto(presupuesto.id).then(() => {
+            modal.style.display = 'none';
+            refreshBudgetsTablesAndDashboard();
+        });
+    };
 }
 
 // Refresca la tabla y el dashboard después de guardar o editar presupuesto
@@ -711,59 +973,6 @@ function refreshBudgetsTablesAndDashboard() {
     loadPresupuestosMesConfigTable();
     updateDashboardSummary();
 }
-
-// Utilidad para mostrar el mes en texto
-function mesToString(mes) {
-    const [y, m] = mes.split('-');
-    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    return `${meses[parseInt(m)-1]} ${y}`;
-}
-
-// Cargar presupuestos al cambiar el mes
-const presupuestoMesInput = document.querySelector('#budgets input[type="month"]');
-if (presupuestoMesInput) {
-    presupuestoMesInput.addEventListener('change', loadPresupuestosMesConfigTable);
-}
-
-// Actualizar dashboard con los datos del presupuesto y los montos reales del mes seleccionado
-function updateDashboardSummary() {
-    const monthInput = document.getElementById('monthFilter');
-    let mes = '';
-    if (monthInput && monthInput.value) {
-        mes = monthInput.value;
-    } else {
-        const now = new Date();
-        mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    }
-    if (!currentUser) return;
-
-    // Obtiene los montos reales de transacciones del mes
-    const trans = getFilteredTransacciones(mes);
-    const ingresoReal = trans.filter(t => t.tipo === "Ingreso").reduce((sum, t) => sum + Number(t.monto), 0);
-    const egresoReal = trans.filter(t => t.tipo === "Egreso").reduce((sum, t) => sum + Number(t.monto), 0);
-    const balanceReal = ingresoReal - egresoReal;
-
-    // Muestra los montos reales en el dashboard
-    const ingresosEl = document.getElementById('dashboardIngresos');
-    const gastosEl = document.getElementById('dashboardGastos');
-    const balanceEl = document.getElementById('dashboardBalance');
-    if (ingresosEl) ingresosEl.textContent = `$${ingresoReal}`;
-    if (gastosEl) gastosEl.textContent = `$${egresoReal}`;
-    if (balanceEl) balanceEl.textContent = `$${balanceReal}`;
-};
-
-
-// Actualizar dashboard al cambiar el mes
-const monthInput = document.getElementById('monthFilter');
-if (monthInput) {
-    monthInput.addEventListener('change', updateDashboardSummary);
-}
-
-// Llama a updateDashboardSummary al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    updateDashboardSummary();
-    loadPresupuestosMesConfigTable();
-});
 
 // --- Mensaje global estilo Bellance ---
 function showGlobalMsg(msg, timeout = 3500) {
@@ -817,5 +1026,40 @@ if (deleteCatConfirm) {
                 });
         }
     };
+}
+
+// --- Dashboard summary ---
+function updateDashboardSummary() {
+    const monthInput = document.getElementById('monthFilter');
+    let mes = '';
+    if (monthInput && monthInput.value) {
+        mes = monthInput.value;
+    } else {
+        const now = new Date();
+        mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }
+    if (!currentUser) return;
+
+    // Obtiene los montos reales de transacciones del mes
+    const trans = getFilteredTransacciones(mes);
+    const ingresoReal = trans.filter(t => t.tipo === "Ingreso").reduce((sum, t) => sum + Number(t.monto), 0);
+    const egresoReal = trans.filter(t => t.tipo === "Egreso").reduce((sum, t) => sum + Number(t.monto), 0);
+    const balanceReal = ingresoReal - egresoReal;
+
+    // Muestra los montos reales en el dashboard
+    const symbol = getCurrencySymbol();
+    const ingresosEl = document.getElementById('dashboardIngresos');
+    const gastosEl = document.getElementById('dashboardGastos');
+    const balanceEl = document.getElementById('dashboardBalance');
+    if (ingresosEl) ingresosEl.textContent = `${symbol}${ingresoReal}`;
+    if (gastosEl) gastosEl.textContent = `${symbol}${egresoReal}`;
+    if (balanceEl) balanceEl.textContent = `${symbol}${balanceReal}`;
+}
+
+// Utilidad para mostrar el mes en texto
+function mesToString(mes) {
+    const [y, m] = mes.split('-');
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    return `${meses[parseInt(m, 10)-1]} ${y}`;
 }
 
